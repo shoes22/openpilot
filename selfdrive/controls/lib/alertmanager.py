@@ -78,7 +78,7 @@ class AlertManager(object):
 
     "steerSaturated": Alert(
         "TAKE CONTROL",
-        "This Turn Is More Than I'm Comfortable With",
+        "This Turn Is More Than I am Comfortable With",
         AlertStatus.userPrompt, AlertSize.mid,
         Priority.LOW, "steerRequired", "chimeSingle", 1., 2., 3.),
 
