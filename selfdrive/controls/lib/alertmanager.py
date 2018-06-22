@@ -377,7 +377,7 @@ class AlertManager(object):
 
     "modelCommIssueNoEntry": Alert(
         "alexpilot Unavailable",
-        "Model Error: Check Internet Connection,
+        "Model Error: Check Internet Connection",
         AlertStatus.normal, AlertSize.mid,
         Priority.LOW, None, "chimeDouble", .4, 2., 3.),
 
