@@ -1,4 +1,3 @@
-import os
 from collections import namedtuple
 from selfdrive.boardd.boardd import can_list_to_can_capnp
 from selfdrive.controls.lib.drive_helpers import rate_limit
@@ -14,7 +13,7 @@ def actuator_hystereses(brake, braking, brake_steady, v_ego, car_fingerprint):
   brake_hyst_off = 0.005                     # to deactivate brakes below this value
   brake_hyst_gap = 0.01                      # don't change brake command for small ocilalitons within this value
 
-  #*** histeresys logic to avoid brake blinking. go above 0.1 to trigger
+  #*** histeresis logic to avoid brake blinking. go above 0.1 to trigger
   if (brake < brake_hyst_on and not braking) or brake < brake_hyst_off:
     brake = 0.
   braking = brake > 0.
@@ -91,7 +90,6 @@ class CarController(object):
     else:
       hud_lanes = 0
 
-    # TODO: factor this out better
     if enabled:
       if hud_show_car:
         hud_car = 2
@@ -123,8 +121,7 @@ class CarController(object):
     elif CS.CP.carFingerprint in (CAR.CRV, CAR.ACURA_RDX):
       STEER_MAX = 0x3e8  # CR-V only uses 12-bits and requires a lower value (max value from energee)
     else:
-      is_fw_modified = os.getenv("DONGLE_ID") in ['99c94dc769b5d96e']
-      STEER_MAX = 0x1FFF if is_fw_modified else 0x1000
+      STEER_MAX = 0x1000
 
     # steer torque is converted back to CAN reference (positive when steering right)
     apply_gas = clip(actuators.gas, 0., 1.)
