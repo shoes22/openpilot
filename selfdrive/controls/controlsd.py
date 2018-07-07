@@ -213,8 +213,8 @@ def state_control(plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, 
   active = isActive(state)
 
   for b in CS.buttonEvents:
-    # button presses for rear view
-    if b.type == "leftBlinker" or b.type == "rightBlinker":
+    # button presses for rear view, right-blinker disabled mod by Alex on 7/7/18
+    if b.type == "leftBlinker":
       rear_view_toggle = b.pressed and rear_view_allowed
 
     if (b.type == "altButton1" and b.pressed) and not passive:
