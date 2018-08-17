@@ -245,7 +245,7 @@ def state_control(plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, 
             set_follow_distance += 1
         else:
             set_follow_distance = 1
-        params.put("CarFollowDistance", set_follow_distance)
+        params.put("CarFollowDistance", str(set_follow_distance))
 
 
 #    if b.type == "leftBlinker":
@@ -493,7 +493,7 @@ def controlsd_thread(gctx=None, rate=100, default_bias=0.):
   free_space = False
   cal_status = Calibration.UNCALIBRATED
   mismatch_counter = 0
-  set_follow_distance = params.get("CarFollowDistance")
+  set_follow_distance = int(params.get("CarFollowDistance"))
 
   rk = Ratekeeper(rate, print_delay_threshold=2./1000)
 
