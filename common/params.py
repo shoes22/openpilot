@@ -63,6 +63,7 @@ keys = {
   "IsUploadVideoOverCellularEnabled": TxType.PERSISTENT,
   "IsDriverMonitoringEnabled": TxType.PERSISTENT,
   "IsGeofenceEnabled": TxType.PERSISTENT,
+  "CarFollowDistance": TxType.PERSISTENT,
 # written: visiond
 # read:    visiond, controlsd
   "CalibrationParams": TxType.PERSISTENT,

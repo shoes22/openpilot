@@ -469,6 +469,8 @@ def main():
     params.put("IsDriverMonitoringEnabled", "0")
   if params.get("IsGeofenceEnabled") is None:
     params.put("IsGeofenceEnabled", "-1")
+  if params.get("CarFollowDistance") is None:
+    params.put("CarFollowDistance", 1)
 
   # is this chffrplus?
   if os.getenv("PASSIVE") is not None:
@@ -514,4 +516,3 @@ if __name__ == "__main__":
   main()
   # manual exit because we are forked
   sys.exit(0)
-

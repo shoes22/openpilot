@@ -468,6 +468,8 @@ class CarInterface(object):
         but = self.CS.prev_cruise_setting
       if but == 1:
         be.type = 'altButton1'
+      elif but == 3:
+        be.type = 'altButton2'
       # TODO: more buttons?
       buttonEvents.append(be)
     ret.buttonEvents = buttonEvents
@@ -603,6 +605,7 @@ class CarInterface(object):
       perception_state.radarErrors, \
       hud_v_cruise, c.hudControl.lanesVisible, \
       hud_show_car = c.hudControl.leadVisible, \
+      hud_follow_distance = c.hudControl.followDistance, \
       hud_alert = hud_alert, \
       snd_beep = snd_beep, \
       snd_chime = snd_chime)

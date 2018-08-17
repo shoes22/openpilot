@@ -67,7 +67,7 @@ class CarController(object):
   def update(self, sendcan, enabled, CS, frame, actuators, \
              pcm_speed, pcm_override, pcm_cancel_cmd, pcm_accel, \
              radar_error, hud_v_cruise, hud_show_lanes, hud_show_car, \
-             hud_alert, snd_beep, snd_chime):
+             hud_follow_distance, hud_alert, snd_beep, snd_chime):
 
     """ Controls thread """
 
@@ -93,7 +93,7 @@ class CarController(object):
 
     if enabled:
       if hud_show_car:
-        hud_lines = 1
+        hud_lines = int(hud_follow_distance)
         hud_car = 2
       else:
         hud_lines = 1

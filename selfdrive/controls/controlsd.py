@@ -224,7 +224,7 @@ def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM
 
 
 def state_control(plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, AM, rk,
-                  driver_status, PL, LaC, LoC, VM, angle_offset, passive):
+                  driver_status, PL, LaC, LoC, VM, angle_offset, passive, set_follow_distance):
   # Given the state, this function returns the actuators
 
   # reset actuators to zero
@@ -238,8 +238,16 @@ def state_control(plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, 
                     v_cruise_kph != v_cruise_kph_last or \
                     CS.steeringPressed
 
-#  for b in CS.buttonEvents:
-#    # button presses for rear view, right-blinker disabled mod by Alex on 7/7/18
+  for b in CS.buttonEvents:
+    # button presses for rear view, right-blinker disabled mod by Alex on 7/7/18
+    if (b.type == "altButton2" and b.pressed):
+        if set_follow_distance < 4:
+            set_follow_distance += 1
+        else:
+            set_follow_distance = 1
+        params.put("CarFollowDistance", set_follow_distance)
+
+
 #    if b.type == "leftBlinker":
 #      rear_view_toggle = b.pressed and rear_view_allowed
 #
@@ -302,7 +310,7 @@ def state_control(plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, 
 
 def data_send(perception_state, plan, plan_ts, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk, carstate,
               carcontrol, live100, livempc, AM, driver_status,
-              LaC, LoC, angle_offset, passive):
+              LaC, LoC, angle_offset, passive, set_follow_distance):
 
   # ***** control the car *****
 
@@ -329,6 +337,7 @@ def data_send(perception_state, plan, plan_ts, CS, CI, CP, VM, state, events, ac
     CC.hudControl.leadVisible = plan.hasLead
     CC.hudControl.visualAlert = AM.visual_alert
     CC.hudControl.audibleAlert = AM.audible_alert
+    CC.hudControl.followDistance = set_follow_distance
 
     # send car controls over can
     CI.apply(CC, perception_state)
@@ -484,6 +493,7 @@ def controlsd_thread(gctx=None, rate=100, default_bias=0.):
   free_space = False
   cal_status = Calibration.UNCALIBRATED
   mismatch_counter = 0
+  set_follow_distance = params.get("CarFollowDistance")
 
   rk = Ratekeeper(rate, print_delay_threshold=2./1000)
 
@@ -520,12 +530,12 @@ def controlsd_thread(gctx=None, rate=100, default_bias=0.):
 
     # compute actuators
     actuators, v_cruise_kph, driver_status, angle_offset = state_control(plan, CS, CP, state, events, v_cruise_kph,
-      v_cruise_kph_last, AM, rk, driver_status, PL, LaC, LoC, VM, angle_offset, passive)
+      v_cruise_kph_last, AM, rk, driver_status, PL, LaC, LoC, VM, angle_offset, passive, set_follow_distance)
     prof.checkpoint("State Control")
 
     # publish data
     CC = data_send(PL.perception_state, plan, plan_ts, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk, carstate, carcontrol,
-      live100, livempc, AM, driver_status, LaC, LoC, angle_offset, passive)
+      live100, livempc, AM, driver_status, LaC, LoC, angle_offset, passive, set_follow_distance)
     prof.checkpoint("Sent")
 
     # *** run loop at fixed rate ***
