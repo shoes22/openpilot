@@ -51,8 +51,7 @@ def process_hud_alert(hud_alert):
 
 
 HUDData = namedtuple("HUDData",
-                     ["pcm_accel", "v_cruise", "mini_car", "car", "show_lines", "follow_lines", "X4",
-                      "lanes", "beep", "chime", "fcw", "acc_alert", "steer_required"])
+                     ["pcm_accel", "v_cruise", "mini_car", "car", "show_lines", "follow_lines", "X4", "lanes", "beep", "chime", "fcw", "acc_alert", "steer_required"])
 
 
 class CarController(object):
@@ -92,7 +91,7 @@ class CarController(object):
       hud_lanes = 0
 
     if enabled:
-      show_lines = 1
+      enable_lines = 1
       hud_lines = format(int(hud_follow_distance), '#04x')
       if hud_show_car:
         hud_car = 2
@@ -100,7 +99,7 @@ class CarController(object):
         hud_car = 1
     else:
       hud_car = 0
-      show_lines = 0
+      enable_lines = 0
 
     # For lateral control-only, send chimes as a beep since we don't send 0x1fa
     if CS.CP.radarOffCan:
@@ -109,8 +108,7 @@ class CarController(object):
     #print chime, alert_id, hud_alert
     fcw_display, steer_required, acc_alert = process_hud_alert(hud_alert)
 
-    hud = HUDData(int(pcm_accel), int(round(hud_v_cruise)), 1, hud_car, show_lines, hud_lines,
-                  0xc1, hud_lanes, int(snd_beep), snd_chime, fcw_display, acc_alert, steer_required)
+    hud = HUDData(int(pcm_accel), int(round(hud_v_cruise)), 1, hud_car, enable_lines, hud_lines, 0xc1, hud_lanes, int(snd_beep), snd_chime, fcw_display, acc_alert, steer_required)
 
     if not all(isinstance(x, int) and 0 <= x < 256 for x in hud):
       hud = HUDData(0xc6, 255, 64, 0xc0, 209, 0x40, 0, 0, 0, 0)
