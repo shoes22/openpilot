@@ -92,7 +92,7 @@ class CarController(object):
 
     if enabled:
       enable_lines = 1
-      hud_lines = format(int(hud_follow_distance), '#04x')
+      hud_lines = int(hud_follow_distance)
       if hud_show_car:
         hud_car = 2
       else:
