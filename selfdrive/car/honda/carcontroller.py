@@ -100,6 +100,7 @@ class CarController(object):
     else:
       hud_car = 0
       enable_lines = 0
+      hud_lines = 0
 
     # For lateral control-only, send chimes as a beep since we don't send 0x1fa
     if CS.CP.radarOffCan:
