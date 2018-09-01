@@ -245,7 +245,7 @@ def state_control(plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, 
             set_follow_distance += 1
         else:
             set_follow_distance = 0
-        params.put("CarFollowDistance", str(set_follow_distance))
+        #params.put("CarFollowDistance", str(set_follow_distance))
 
 
 #    if b.type == "leftBlinker":
