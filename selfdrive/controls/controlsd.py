@@ -224,7 +224,7 @@ def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM
 
 
 def state_control(plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, AM, rk,
-                  driver_status, PL, LaC, LoC, VM, angle_offset, passive, set_follow_distance):
+                  driver_status, PL, LaC, LoC, VM, angle_offset, passive):
   # Given the state, this function returns the actuators
 
   # reset actuators to zero
@@ -238,6 +238,8 @@ def state_control(plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, 
   driver_engaged = len(CS.buttonEvents) > 0 or \
                     v_cruise_kph != v_cruise_kph_last or \
                     CS.steeringPressed
+
+  set_follow_distance = int(params.get("CarFollowDistance"))
 
   for b in CS.buttonEvents:
     # button presses for rear view, right-blinker disabled mod by Alex on 7/7/18
@@ -306,7 +308,7 @@ def state_control(plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, 
 
   AM.process_alerts(sec_since_boot())
 
-  return actuators, v_cruise_kph, driver_status, angle_offset
+  return actuators, v_cruise_kph, driver_status, angle_offset, set_follow_distance
 
 
 def data_send(perception_state, plan, plan_ts, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk, carstate,
@@ -488,7 +490,6 @@ def controlsd_thread(gctx=None, rate=100, default_bias=0.):
   free_space = False
   cal_status = Calibration.UNCALIBRATED
   mismatch_counter = 0
-  set_follow_distance = int(params.get("CarFollowDistance"))
 
   rk = Ratekeeper(rate, print_delay_threshold=2./1000)
 
@@ -524,8 +525,8 @@ def controlsd_thread(gctx=None, rate=100, default_bias=0.):
       prof.checkpoint("State transition")
 
     # compute actuators
-    actuators, v_cruise_kph, driver_status, angle_offset = state_control(plan, CS, CP, state, events, v_cruise_kph,
-      v_cruise_kph_last, AM, rk, driver_status, PL, LaC, LoC, VM, angle_offset, passive, set_follow_distance)
+    actuators, v_cruise_kph, driver_status, angle_offset, set_follow_distance = state_control(plan, CS, CP, state, events, v_cruise_kph,
+      v_cruise_kph_last, AM, rk, driver_status, PL, LaC, LoC, VM, angle_offset, passive)
     prof.checkpoint("State Control")
 
     # publish data
