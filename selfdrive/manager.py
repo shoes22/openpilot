@@ -474,7 +474,7 @@ def main():
   if params.get("IsGeofenceEnabled") is None:
     params.put("IsGeofenceEnabled", "-1")
   if params.get("CarFollowDistance") is None:
-    params.put("CarFollowDistance", "1")
+    params.put("CarFollowDistance", "3")
 
   # is this chffrplus?
   if os.getenv("PASSIVE") is not None:

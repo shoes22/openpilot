@@ -244,10 +244,10 @@ def state_control(plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, 
   for b in CS.buttonEvents:
     # button presses for rear view, right-blinker disabled mod by Alex on 7/7/18
     if (b.type == "altButton2" and b.pressed):
-        if set_follow_distance < 3:
-            set_follow_distance += 1
+        if set_follow_distance > 0:
+            set_follow_distance -= 1
         else:
-            set_follow_distance = 0
+            set_follow_distance = 3
         params.put("CarFollowDistance", str(set_follow_distance))
 
 
