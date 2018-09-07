@@ -370,7 +370,7 @@ tmpQN1[34] = + tmpQN2[15]*tmpFx[4] + tmpQN2[16]*tmpFx[10] + tmpQN2[17]*tmpFx[16]
 tmpQN1[35] = + tmpQN2[15]*tmpFx[5] + tmpQN2[16]*tmpFx[11] + tmpQN2[17]*tmpFx[17];
 }
 
-void acado_evaluateObjective(TR)
+void acado_evaluateObjective(double TR)
 {
 int runObj;
 for (runObj = 0; runObj < 20; ++runObj)
@@ -5155,7 +5155,7 @@ acado_multEDu( &(acadoWorkspace.E[ 1248 ]), &(acadoWorkspace.x[ 24 ]), &(acadoVa
 acado_multEDu( &(acadoWorkspace.E[ 1254 ]), &(acadoWorkspace.x[ 25 ]), &(acadoVariables.x[ 120 ]) );
 }
 
-int acado_preparationStep(TR)
+int acado_preparationStep(double TR)
 {
 int ret;
 
@@ -5308,7 +5308,7 @@ kkt += fabs(acadoWorkspace.ubA[index] * prd);
 return kkt;
 }
 
-real_t acado_getObjective(TR)
+real_t acado_getObjective(double TR)
 {
 real_t objVal;
 
