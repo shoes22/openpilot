@@ -56,6 +56,7 @@ def get_can_signals(CP):
       ("PEDAL_GAS", "POWERTRAIN_DATA", 0),
       ("CRUISE_SETTING", "SCM_BUTTONS", 0),
       ("ACC_STATUS", "POWERTRAIN_DATA", 0),
+      ("LDW_ON", "LKAS_HUD", 1),
   ]
 
   checks = [
