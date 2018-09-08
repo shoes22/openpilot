@@ -7,6 +7,7 @@ from copy import copy
 from cereal import log
 from collections import defaultdict
 from common.realtime import sec_since_boot
+from common.params import Params
 from common.numpy_fast import interp
 import selfdrive.messaging as messaging
 from selfdrive.swaglog import cloudlog
@@ -23,8 +24,8 @@ _DT = 0.01    # 100Hz
 _DT_MPC = 0.2  # 5Hz
 MAX_SPEED_ERROR = 2.0
 AWARENESS_DECEL = -0.2     # car smoothly decel at .2m/s^2 when user is distracted
-
-TR = 1.4 # CS.distance_toggle
+params = Params()
+#TR = 1.4 # CS.distance_toggle
 GPS_PLANNER_ADDR = "192.168.5.1"
 
 # lookup tables VS speed to determine min and max accels in cruise
@@ -141,7 +142,7 @@ class LongitudinalMpc(object):
   def __init__(self, mpc_id, live_longitudinal_mpc):
     self.live_longitudinal_mpc = live_longitudinal_mpc
     self.mpc_id = mpc_id
-    self.TR = TR
+    self.TR = 1.8
 
     self.setup_mpc()
     self.v_mpc = 0.0
@@ -220,6 +221,15 @@ class LongitudinalMpc(object):
 
     # Calculate mpc
     t = sec_since_boot()
+    distanceToggle = int(params.get("CarFollowDistance"))
+    if distanceToggle == 3:
+        self.TR = 1.8
+    elif distanceToggle == 2:
+        self.TR = 1.5
+    elif distanceToggle == 1:
+        self.TR = 1.2
+    else:
+        self.TR = 0.9
     n_its = self.libmpc.run_mpc(self.cur_state, self.mpc_solution, self.a_lead_tau, self.TR)
     duration = int((sec_since_boot() - t) * 1e9)
     self.send_mpc_solution(n_its, duration)
