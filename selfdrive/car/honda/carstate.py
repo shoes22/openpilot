@@ -52,6 +52,7 @@ def get_can_signals(CP):
       ("HUD_DISTANCE_3", "ACC_HUD", 0),
       ("USER_BRAKE", "VSA_STATUS", 0),
       ("STEER_STATUS", "STEER_STATUS", 5),
+      ("STEER_CONTROL_ACTIVE", "STEER_STATUS", 1),
       ("GEAR_SHIFTER", "GEARBOX", 0),
       ("PEDAL_GAS", "POWERTRAIN_DATA", 0),
       ("CRUISE_SETTING", "SCM_BUTTONS", 0),
