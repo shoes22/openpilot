@@ -102,6 +102,7 @@ def create_ui_commands(packer, pcm_speed, hud, car_fingerprint, idx):
     'STEERING_REQUIRED': hud.steer_required,
     'SOLID_LANES': hud.lanes,
     'BEEP': hud.beep,
+    'LDW_OFF': 0,
     'LDW_ON': 1,
   }
   commands.append(packer.make_can_msg('LKAS_HUD', bus, lkas_hud_values, idx))
