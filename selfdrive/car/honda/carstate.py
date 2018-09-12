@@ -57,8 +57,9 @@ def get_can_signals(CP):
       ("PEDAL_GAS", "POWERTRAIN_DATA", 0),
       ("CRUISE_SETTING", "SCM_BUTTONS", 0),
       ("ACC_STATUS", "POWERTRAIN_DATA", 0),
-      ("LDW_ON", "LKAS_HUD", 1),
+      ("SET_ME_X03", "ACC_HUD", 0),
       ("LDW_OFF", "LKAS_HUD", 0),
+      ("LDW_ON", "LKAS_HUD", 1),
   ]
 
   checks = [
@@ -292,6 +293,7 @@ class CarState(object):
     self.user_brake = cp.vl["VSA_STATUS"]['USER_BRAKE']
     self.pcm_acc_status = cp.vl["POWERTRAIN_DATA"]['ACC_STATUS']
     self.hud_lead = cp.vl["ACC_HUD"]['HUD_LEAD']
+    self.hud_follow_distance = cp.vl["ACC_HUD"]['SET_ME_X03']
 
 
 # carstate standalone tester
