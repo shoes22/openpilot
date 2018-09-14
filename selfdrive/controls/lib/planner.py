@@ -7,7 +7,6 @@ from copy import copy
 from cereal import log
 from collections import defaultdict
 from common.realtime import sec_since_boot
-from common.params import Params
 from common.numpy_fast import interp
 import selfdrive.messaging as messaging
 from selfdrive.swaglog import cloudlog
@@ -24,7 +23,6 @@ _DT = 0.01    # 100Hz
 _DT_MPC = 0.2  # 5Hz
 MAX_SPEED_ERROR = 2.0
 AWARENESS_DECEL = -0.2     # car smoothly decel at .2m/s^2 when user is distracted
-params = Params()
 #TR = 1.4 # CS.distance_toggle
 GPS_PLANNER_ADDR = "192.168.5.1"
 
@@ -221,7 +219,7 @@ class LongitudinalMpc(object):
 
     # Calculate mpc
     t = sec_since_boot()
-    distanceToggle = int(params.get("CarFollowDistance"))
+    distanceToggle = CS.hud_follow_distance
     if distanceToggle == 3:
         self.TR = 1.8
     elif distanceToggle == 2:
