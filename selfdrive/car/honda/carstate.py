@@ -144,6 +144,7 @@ class CarState(object):
     self.user_gas, self.user_gas_pressed = 0., 0
     self.brake_switch_prev = 0
     self.brake_switch_ts = 0
+    self.hud_follow_distance = 3
 
     self.cruise_buttons = 0
     self.cruise_setting = 0
