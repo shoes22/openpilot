@@ -219,8 +219,8 @@ class LongitudinalMpc(object):
 
     # Calculate mpc
     t = sec_since_boot()
-    if hasattr(CS, 'hud_follow_distance'):
-        distanceToggle = CS.hud_follow_distance
+    if hasattr(CS, 'followDistance'):
+        distanceToggle = CS.followDistance
     else:
         distanceToggle = 3
 

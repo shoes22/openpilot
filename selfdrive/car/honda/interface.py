@@ -385,7 +385,7 @@ class CarInterface(object):
     ret.wheelSpeeds.fr = self.CS.v_wheel_fr
     ret.wheelSpeeds.rl = self.CS.v_wheel_rl
     ret.wheelSpeeds.rr = self.CS.v_wheel_rr
-    ret.hud_follow_distance = self.CS.hud_follow_distance
+    ret.followDistance = self.CS.hud_follow_distance
 
     # gas pedal
     ret.gas = self.CS.car_gas / 256.0
