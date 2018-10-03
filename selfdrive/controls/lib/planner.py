@@ -233,7 +233,7 @@ class LongitudinalMpc(object):
     else:
         self.TR = 0.9
     if CS.vEgo < 15.65:
-        TR=1.8 # under 56.34km/hr use a TR of 1.8 seconds
+        self.TR = 1.8 # under 56.34km/hr use a TR of 1.8 seconds
     n_its = self.libmpc.run_mpc(self.cur_state, self.mpc_solution, self.a_lead_tau, a_lead, self.TR)
     duration = int((sec_since_boot() - t) * 1e9)
     self.send_mpc_solution(n_its, duration)
