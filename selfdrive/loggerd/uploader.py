@@ -268,6 +268,8 @@ def uploader_fn(exit_event):
 
     d = uploader.next_file_to_upload(with_video=True)
     if d is None:
+      if params.get("HasUpload") == "1":
+          params.put("UploadDone", "1")
       time.sleep(5)
       continue
 
@@ -275,6 +277,7 @@ def uploader_fn(exit_event):
 
     cloudlog.info("to upload %r", d)
     success = uploader.upload(key, fn)
+    params.put("HasUpload", "1")
     if success:
       backoff = 0.1
     else:
@@ -288,4 +291,3 @@ def main(gctx=None):
 
 if __name__ == "__main__":
   main()
-

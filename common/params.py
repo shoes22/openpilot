@@ -74,6 +74,8 @@ keys = {
   "Passive": TxType.PERSISTENT,
   "DoUninstall": TxType.CLEAR_ON_MANAGER_START,
   "ShouldDoUpdate": TxType.CLEAR_ON_MANAGER_START,
+  "HasUpload": TxType.CLEAR_ON_MANAGER_START,
+  "UploadDone": TxType.CLEAR_ON_MANAGER_START,
   "IsUpdateAvailable": TxType.PERSISTENT,
 
   "RecordFront": TxType.PERSISTENT,
