@@ -1638,7 +1638,6 @@ static void ui_draw_vision(UIState *s) {
   nvgScale(s->vg, (float)viz_w / s->fb_w, (float)inner_height / s->fb_h);
   if (!scene->frontview && !scene->fullview) {
     ui_draw_world(s);
-
   }
 
   nvgRestore(s->vg);
@@ -1800,7 +1799,7 @@ static void ui_update(UIState *s) {
 
   // poll for events
   while (true) {
-    zmq_pollitem_t polls[10] = {{0}};
+    zmq_pollitem_t polls[11] = {{0}};
     polls[0].socket = s->live100_sock_raw;
     polls[0].events = ZMQ_POLLIN;
     polls[1].socket = s->livecalibration_sock_raw;
