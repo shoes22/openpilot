@@ -276,6 +276,7 @@ def uploader_fn(exit_event):
     key, fn, _ = d
 
     cloudlog.info("to upload %r", d)
+    params.put("UploadDone", "0")
     success = uploader.upload(key, fn)
     params.put("HasUpload", "1")
     if success:
