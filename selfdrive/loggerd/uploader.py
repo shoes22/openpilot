@@ -257,7 +257,8 @@ def uploader_fn(exit_event):
   backoff = 0.1
   while True:
 
-    should_upload = (params.get("IsUploadVideoOverCellularEnabled") != "0") or is_on_wifi()
+    #I changed the "or" to "and" below to prevent upload while using my phone's mobile hotspot. -Alex 12/13/2018
+    should_upload = (params.get("IsUploadVideoOverCellularEnabled") != "0") and is_on_wifi()
 
     if exit_event.is_set():
       return
