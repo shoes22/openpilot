@@ -64,6 +64,7 @@ keys = {
   "IsDriverMonitoringEnabled": TxType.PERSISTENT,
   "IsGeofenceEnabled": TxType.PERSISTENT,
   "CarFollowDistance": TxType.PERSISTENT,
+  "SpeedLimitOffset": TxType.PERSISTENT,
 # written: visiond
 # read:    visiond, controlsd
   "CalibrationParams": TxType.PERSISTENT,
@@ -77,6 +78,8 @@ keys = {
   "HasUpload": TxType.CLEAR_ON_MANAGER_START,
   "UploadDone": TxType.CLEAR_ON_MANAGER_START,
   "IsUpdateAvailable": TxType.PERSISTENT,
+  "LongitudinalControl": TxType.PERSISTENT,
+  "LimitSetSpeed": TxType.PERSISTENT,
 
   "RecordFront": TxType.PERSISTENT,
 }
