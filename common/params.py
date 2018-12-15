@@ -60,7 +60,7 @@ keys = {
   "IsFcwEnabled": TxType.PERSISTENT,
   "HasAcceptedTerms": TxType.PERSISTENT,
   "CompletedTrainingVersion": TxType.PERSISTENT,
-  "IsUploadVideoOverCellularEnabled": TxType.PERSISTENT,
+  "IsUploadVideoOverCellularEnabled": TxType.CLEAR_ON_MANAGER_START,
   "IsDriverMonitoringEnabled": TxType.PERSISTENT,
   "IsGeofenceEnabled": TxType.PERSISTENT,
   "CarFollowDistance": TxType.PERSISTENT,

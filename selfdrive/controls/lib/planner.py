@@ -422,7 +422,12 @@ class Planner(object):
 
           if set_speed_limit_active:
             offset = float(self.params.get("SpeedLimitOffset"))
-            self.v_speedlimit = speed_limit + offset
+            #self.v_speedlimit = speed_limit + offset
+            #commented out above line, we're hardcoding offset dynamically instead of using the manual setting
+            if speed_limit > 21.90496:
+                self.v_speedlimit = speed_limit + float(11 * CV.MPH_TO_MS)
+            else:
+                self.v_speedlimit = speed_limit + float(6 * CV.MPH_TO_MS)
 
       v_cruise_setpoint = min([v_cruise_setpoint, self.v_speedlimit])
 
