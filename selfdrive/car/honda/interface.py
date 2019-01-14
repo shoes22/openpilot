@@ -568,6 +568,11 @@ class CarInterface(object):
       if b.type == "cancel" and b.pressed:
         events.append(create_event('buttonCancel', [ET.USER_DISABLE]))
 
+    if b.type == "altButton1" and b.pressed:
+        events.append(create_event('buttonCancel', [ET.USER_DISABLE]))
+        self.last_enable_pressed = cur_time
+        enable_pressed = True
+
     if self.CP.enableCruise:
       # KEEP THIS EVENT LAST! send enable event if button is pressed and there are
       # NO_ENTRY events, so controlsd will display alerts. Also not send enable events
