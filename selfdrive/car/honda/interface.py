@@ -568,7 +568,7 @@ class CarInterface(object):
       if b.type == "cancel" and b.pressed:
         events.append(create_event('buttonCancel', [ET.USER_DISABLE]))
 
-    if b.type == "altButton1" and b.pressed:
+      if b.type == "altButton1" and b.pressed:
         events.append(create_event('buttonCancel', [ET.USER_DISABLE]))
         self.last_enable_pressed = cur_time
         enable_pressed = True
