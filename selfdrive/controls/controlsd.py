@@ -143,8 +143,6 @@ def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM
   enabled = isEnabled(state)
   params = Params()
 
-  v_cruise_kph_last = v_cruise_kph
-
   last_live_map_data = PL.last_live_map_data
   if last_live_map_data:
       if  params.get("LimitSetSpeed") == "1" and last_live_map_data.speedLimitValid:
@@ -156,11 +154,13 @@ def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM
                   v_cruise_kph = int((speed_limit + float(10 * CV.MPH_TO_MS)) * CV.MS_TO_KPH)
               speed_limit_last = speed_limit
 
+  v_cruise_kph_last = v_cruise_kph
+
   # if stock cruise is completely disabled, then we can use our own set speed logic
   if not CP.enableCruise:
     v_cruise_kph = update_v_cruise(v_cruise_kph, CS.buttonEvents, enabled)
-  elif CP.enableCruise and CS.cruiseState.enabled:
-    v_cruise_kph = CS.cruiseState.speed * CV.MS_TO_KPH
+  #elif CP.enableCruise and CS.cruiseState.enabled:
+    #v_cruise_kph = CS.cruiseState.speed * CV.MS_TO_KPH
 
   # decrease the soft disable timer at every step, as it's reset on
   # entrance in SOFT_DISABLING state
