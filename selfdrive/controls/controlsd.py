@@ -119,31 +119,13 @@ def data_sample(CI, CC, thermal, calibration, health, driver_monitor, gps_locati
   return CS, events, cal_status, cal_perc, overtemp, free_space, low_battery, mismatch_counter
 
 
-def calc_plan(CS, CP, VM, events, PL, LaC, LoC, v_cruise_kph, driver_status, geofence):
+def calc_plan(CS, CP, VM, events, PL, LaC, LoC, v_cruise_kph, driver_status, geofence, speed_limit_last):
   """Calculate a longitudinal plan using MPC"""
 
   # Slow down when based on driver monitoring or geofence
   force_decel = driver_status.awareness < 0. or (geofence is not None and not geofence.in_geofence)
 
-  # Update planner
-  plan_packet = PL.update(CS, CP, VM, LaC, LoC, v_cruise_kph, force_decel)
-  plan = plan_packet.plan
-  plan_ts = plan_packet.logMonoTime
-  events += list(plan.events)
-
-  # Only allow engagement with brake pressed when stopped behind another stopped car
-  if CS.brakePressed and plan.vTargetFuture >= STARTING_TARGET_SPEED and not CP.radarOffCan and CS.vEgo < 0.3:
-    events.append(create_event('noTarget', [ET.NO_ENTRY, ET.IMMEDIATE_DISABLE]))
-
-  return plan, plan_ts
-
-
-def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM, PL, speed_limit_last):
-  """Compute conditional state transitions and execute actions on state transitions"""
-  enabled = isEnabled(state)
   params = Params()
-
-  v_cruise_kph_last = v_cruise_kph
 
   last_live_map_data = PL.last_live_map_data
   if last_live_map_data:
@@ -155,6 +137,26 @@ def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM
               else:
                   v_cruise_kph = int((speed_limit + float(10 * CV.MPH_TO_MS)) * CV.MS_TO_KPH)
               speed_limit_last = speed_limit
+
+  # Update planner
+  plan_packet = PL.update(CS, CP, VM, LaC, LoC, v_cruise_kph, force_decel)
+  plan = plan_packet.plan
+  plan_ts = plan_packet.logMonoTime
+  events += list(plan.events)
+
+  # Only allow engagement with brake pressed when stopped behind another stopped car
+  if CS.brakePressed and plan.vTargetFuture >= STARTING_TARGET_SPEED and not CP.radarOffCan and CS.vEgo < 0.3:
+    events.append(create_event('noTarget', [ET.NO_ENTRY, ET.IMMEDIATE_DISABLE]))
+
+  return plan, plan_ts, v_cruise_kph, speed_limit_last
+
+
+def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM):
+  """Compute conditional state transitions and execute actions on state transitions"""
+  enabled = isEnabled(state)
+  params = Params()
+
+  v_cruise_kph_last = v_cruise_kph
 
   # if stock cruise is completely disabled, then we can use our own set speed logic
   if not CP.enableCruise:
@@ -234,7 +236,7 @@ def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM
     elif not get_events(events, [ET.PRE_ENABLE]):
       state = State.enabled
 
-  return state, soft_disable_timer, v_cruise_kph, v_cruise_kph_last, speed_limit_last
+  return state, soft_disable_timer, v_cruise_kph, v_cruise_kph_last
 
 
 def state_control(plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, AM, rk,
@@ -528,13 +530,13 @@ def controlsd_thread(gctx=None, rate=100, default_bias=0.):
     prof.checkpoint("Sample")
 
     # Define longitudinal plan (MPC)
-    plan, plan_ts = calc_plan(CS, CP, VM, events, PL, LaC, LoC, v_cruise_kph, driver_status, geofence)
+    plan, plan_ts, v_cruise_kph, speed_limit_last = calc_plan(CS, CP, VM, events, PL, LaC, LoC, v_cruise_kph, driver_status, geofence, speed_limit_last)
     prof.checkpoint("Plan")
 
     if not passive:
       # update control state
-      state, soft_disable_timer, v_cruise_kph, v_cruise_kph_last, speed_limit_last = \
-        state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM, PL, speed_limit_last)
+      state, soft_disable_timer, v_cruise_kph, v_cruise_kph_last = \
+        state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM)
       prof.checkpoint("State transition")
 
     # Compute actuators (runs PID loops and lateral MPC)
