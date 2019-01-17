@@ -246,6 +246,7 @@ struct CarControl {
     visualAlert @4: VisualAlert;
     audibleAlert @5: AudibleAlert;
     followDistance @6: Int16;
+    updateSpeed @7: Bool;
 
     enum VisualAlert {
       # these are the choices from the Honda
