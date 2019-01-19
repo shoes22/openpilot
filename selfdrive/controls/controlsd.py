@@ -241,7 +241,7 @@ def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM
 
 
 def state_control(plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, AM, rk,
-                  driver_status, PL, LaC, LoC, VM, angle_offset, passive, is_metric, cal_perc):
+                  driver_status, PL, LaC, LoC, VM, angle_offset, passive, is_metric, cal_perc, keep_this_frame, keep_this_speed, update_speed_limit):
   """Given the state, this function returns an actuators packet"""
 
   actuators = car.CarControl.Actuators.new_message()
@@ -249,6 +249,13 @@ def state_control(plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, 
   enabled = isEnabled(state)
   active = isActive(state)
   params = Params()
+
+  if update_speed_limit:
+      keep_this_frame = rk.frame + 1000
+      keep_this_speed = v_cruise_kph
+
+  if keep_this_frame > rk.frame:
+      v_cruise_kph = keep_this_speed
 
   # check if user has interacted with the car
   driver_engaged = len(CS.buttonEvents) > 0 or \
@@ -328,7 +335,7 @@ def state_control(plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, 
 
   AM.process_alerts(sec_since_boot())
 
-  return actuators, v_cruise_kph, driver_status, angle_offset, set_follow_distance
+  return actuators, v_cruise_kph, driver_status, angle_offset, set_follow_distance, keep_this_frame, keep_this_speed
 
 
 def data_send(perception_state, plan, plan_ts, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk, carstate,
@@ -509,6 +516,8 @@ def controlsd_thread(gctx=None, rate=100, default_bias=0.):
   low_battery = False
   speed_limit_last = 0
   update_speed_limit = False
+  keep_this_frame = 0
+  keep_this_speed = 0
 
   rk = Ratekeeper(rate, print_delay_threshold=2. / 1000)
 
@@ -543,8 +552,8 @@ def controlsd_thread(gctx=None, rate=100, default_bias=0.):
       prof.checkpoint("State transition")
 
     # Compute actuators (runs PID loops and lateral MPC)
-    actuators, v_cruise_kph, driver_status, angle_offset, set_follow_distance = state_control(plan, CS, CP, state, events, v_cruise_kph,
-      v_cruise_kph_last, AM, rk, driver_status, PL, LaC, LoC, VM, angle_offset, passive, is_metric, cal_perc)
+    actuators, v_cruise_kph, driver_status, angle_offset, set_follow_distance, keep_this_frame, keep_this_speed = state_control(plan, CS, CP, state, events, v_cruise_kph,
+      v_cruise_kph_last, AM, rk, driver_status, PL, LaC, LoC, VM, angle_offset, passive, is_metric, cal_perc, keep_this_frame, keep_this_speed, update_speed_limit)
     prof.checkpoint("State Control")
 
     # Publish data
