@@ -126,13 +126,12 @@ def calc_plan(CS, CP, VM, events, PL, LaC, LoC, v_cruise_kph, driver_status, geo
   force_decel = driver_status.awareness < 0. or (geofence is not None and not geofence.in_geofence)
 
   params = Params()
-  update_speed_limit = False
+
   last_live_map_data = PL.last_live_map_data
   if last_live_map_data:
       if  params.get("LimitSetSpeed") == "1" and last_live_map_data.speedLimitValid:
           speed_limit = last_live_map_data.speedLimit
           if speed_limit != speed_limit_last:
-              update_speed_limit = True
               if speed_limit > 21.90496:
                   v_cruise_kph = int((speed_limit + float(15 * CV.MPH_TO_MS)) * CV.MS_TO_KPH)
               else:
@@ -149,7 +148,7 @@ def calc_plan(CS, CP, VM, events, PL, LaC, LoC, v_cruise_kph, driver_status, geo
   if CS.brakePressed and plan.vTargetFuture >= STARTING_TARGET_SPEED and not CP.radarOffCan and CS.vEgo < 0.3:
     events.append(create_event('noTarget', [ET.NO_ENTRY, ET.IMMEDIATE_DISABLE]))
 
-  return plan, plan_ts, v_cruise_kph, speed_limit_last, update_speed_limit
+  return plan, plan_ts, v_cruise_kph, speed_limit_last
 
 
 def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM):
@@ -241,7 +240,7 @@ def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM
 
 
 def state_control(plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, AM, rk,
-                  driver_status, PL, LaC, LoC, VM, angle_offset, passive, is_metric, cal_perc, update_speed_limit):
+                  driver_status, PL, LaC, LoC, VM, angle_offset, passive, is_metric, cal_perc):
   """Given the state, this function returns an actuators packet"""
 
   actuators = car.CarControl.Actuators.new_message()
@@ -265,16 +264,6 @@ def state_control(plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, 
         else:
             set_follow_distance = 3
         params.put("CarFollowDistance", str(set_follow_distance))
-
-  last_live_map_data = PL.last_live_map_data
-  if last_live_map_data:
-      if  params.get("LimitSetSpeed") == "1" and last_live_map_data.speedLimitValid:
-          speed_limit = last_live_map_data.speedLimit
-          if  update_speed_limit:
-              if speed_limit > 21.90496:
-                  v_cruise_kph = int((speed_limit + float(15 * CV.MPH_TO_MS)) * CV.MS_TO_KPH)
-              else:
-                  v_cruise_kph = int((speed_limit + float(10 * CV.MPH_TO_MS)) * CV.MS_TO_KPH)
 
 
 #    if b.type == "leftBlinker":
@@ -517,7 +506,6 @@ def controlsd_thread(gctx=None, rate=100, default_bias=0.):
   mismatch_counter = 0
   low_battery = False
   speed_limit_last = 0
-  update_speed_limit = False
 
   rk = Ratekeeper(rate, print_delay_threshold=2. / 1000)
 
@@ -542,7 +530,7 @@ def controlsd_thread(gctx=None, rate=100, default_bias=0.):
     prof.checkpoint("Sample")
 
     # Define longitudinal plan (MPC)
-    plan, plan_ts, v_cruise_kph, speed_limit_last, update_speed_limit = calc_plan(CS, CP, VM, events, PL, LaC, LoC, v_cruise_kph, driver_status, geofence, speed_limit_last)
+    plan, plan_ts, v_cruise_kph, speed_limit_last = calc_plan(CS, CP, VM, events, PL, LaC, LoC, v_cruise_kph, driver_status, geofence, speed_limit_last)
     prof.checkpoint("Plan")
 
     if not passive:
@@ -553,7 +541,7 @@ def controlsd_thread(gctx=None, rate=100, default_bias=0.):
 
     # Compute actuators (runs PID loops and lateral MPC)
     actuators, v_cruise_kph, driver_status, angle_offset, set_follow_distance = state_control(plan, CS, CP, state, events, v_cruise_kph,
-      v_cruise_kph_last, AM, rk, driver_status, PL, LaC, LoC, VM, angle_offset, passive, is_metric, cal_perc, update_speed_limit)
+      v_cruise_kph_last, AM, rk, driver_status, PL, LaC, LoC, VM, angle_offset, passive, is_metric, cal_perc)
     prof.checkpoint("State Control")
 
     # Publish data
