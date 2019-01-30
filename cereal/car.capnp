@@ -245,8 +245,10 @@ struct CarControl {
     leadVisible @3: Bool;
     visualAlert @4: VisualAlert;
     audibleAlert @5: AudibleAlert;
-    followDistance @6: Int16;
-    updateSpeed @7: Bool;
+    rightLaneVisible @6: Bool;
+    leftLaneVisible @7: Bool;
+    followDistance @8: Int16;
+    updateSpeed @9: Bool;
 
     enum VisualAlert {
       # these are the choices from the Honda
