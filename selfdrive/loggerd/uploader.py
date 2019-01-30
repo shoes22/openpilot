@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+import re
 import time
 import stat
 import json
@@ -78,6 +79,16 @@ def is_on_wifi():
 
   return "\x00".join("WIFI") in data
 
+def is_on_hotspot():
+  try:
+    result = subprocess.check_output(["ifconfig", "wlan0"])
+    result = re.findall(r"inet addr:((\d+\.){3}\d+)", result)[0][0]
+
+    is_android = result.startswith('192.168.43.')
+    is_ios = result.startswith('172.20.10.')
+    return (is_android or is_ios)
+  except:
+    return False
 
 class Uploader(object):
   def __init__(self, dongle_id, access_token, root):
@@ -256,9 +267,11 @@ def uploader_fn(exit_event):
 
   backoff = 0.1
   while True:
-
+    allow_cellular = (params.get("IsUploadVideoOverCellularEnabled") != "0")
+    on_hotspot = is_on_hotspot()
+    on_wifi = is_on_wifi()
     #I changed the "or" to "and" below to prevent upload while using my phone's mobile hotspot. -Alex 12/13/2018
-    should_upload = (params.get("IsUploadVideoOverCellularEnabled") != "0") and is_on_wifi()
+    should_upload = allow_cellular and (on_wifi and not on_hotspot)
 
     if exit_event.is_set():
       return
@@ -276,6 +289,7 @@ def uploader_fn(exit_event):
 
     key, fn, _ = d
 
+    cloudlog.event("uploader_netcheck", allow_cellular=allow_cellular, is_on_hotspot=on_hotspot, is_on_wifi=on_wifi)
     cloudlog.info("to upload %r", d)
     params.put("UploadDone", "0")
     success = uploader.upload(key, fn)
