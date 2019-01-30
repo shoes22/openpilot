@@ -619,11 +619,13 @@ class CarInterface(object):
 
     if c.hudControl.updateSpeed:
         self.keep_update_on = True
-        self.keep_this_frame = self.frame + 5000
+        self.keep_this_frame = self.frame + 300
         self.keep_this_speed = c.hudControl.setSpeed * CV.MS_TO_KPH
 
     if self.frame > self.keep_this_frame:
         self.keep_update_on = False
+    else:
+        hud_v_cruise = self.keep_this_speed
 
     self.CC.update(self.sendcan, c.enabled, self.CS, self.frame, \
       c.actuators, \

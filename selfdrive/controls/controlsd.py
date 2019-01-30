@@ -251,7 +251,7 @@ def state_control(plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, 
   params = Params()
 
   if update_speed_limit:
-      keep_this_frame = rk.frame + 10000
+      keep_this_frame = rk.frame + 1000
       keep_this_speed = v_cruise_kph
 
   if keep_this_frame > rk.frame:
