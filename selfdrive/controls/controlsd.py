@@ -138,23 +138,11 @@ def calc_plan(CS, CP, VM, events, PL, LaC, LoC, v_cruise_kph, driver_status, geo
   return plan, plan_ts
 
 
-def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM, PL, speed_limit_last):
+def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM):
   """Compute conditional state transitions and execute actions on state transitions"""
   enabled = isEnabled(state)
-  params = Params()
 
   v_cruise_kph_last = v_cruise_kph
-
-  last_live_map_data = PL.last_live_map_data
-  if last_live_map_data:
-      if  params.get("LimitSetSpeed") == "1" and last_live_map_data.speedLimitValid:
-          speed_limit = last_live_map_data.speedLimit
-          if speed_limit != speed_limit_last:
-              if speed_limit > 21.90496:
-                  v_cruise_kph = int((speed_limit + float(15 * CV.MPH_TO_MS)) * CV.MS_TO_KPH)
-              else:
-                  v_cruise_kph = int((speed_limit + float(10 * CV.MPH_TO_MS)) * CV.MS_TO_KPH)
-              speed_limit_last = speed_limit
 
   # if stock cruise is completely disabled, then we can use our own set speed logic
   if not CP.enableCruise:
@@ -234,7 +222,7 @@ def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM
     elif not get_events(events, [ET.PRE_ENABLE]):
       state = State.enabled
 
-  return state, soft_disable_timer, v_cruise_kph, v_cruise_kph_last, speed_limit_last
+  return state, soft_disable_timer, v_cruise_kph, v_cruise_kph_last
 
 
 def state_control(plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, AM, rk,
@@ -253,6 +241,16 @@ def state_control(plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, 
                     CS.steeringPressed
 
   set_follow_distance = int(params.get("CarFollowDistance"))
+
+  last_live_map_data = PL.last_live_map_data
+  if last_live_map_data:
+      if  params.get("LimitSetSpeed") == "1" and last_live_map_data.speedLimitValid:
+          speed_limit = last_live_map_data.speedLimit
+          if speed_limit > 21.90496:
+              v_cruise_kph = int(round(speed_limit + float(16 * CV.MPH_TO_MS)) * CV.MS_TO_KPH)
+          else:
+              v_cruise_kph = int(round(speed_limit + float(11 * CV.MPH_TO_MS)) * CV.MS_TO_KPH)
+
 
   for b in CS.buttonEvents:
     # button presses for rear view, right-blinker disabled mod by Alex on 7/7/18
@@ -503,7 +501,6 @@ def controlsd_thread(gctx=None, rate=100, default_bias=0.):
   cal_perc = 0
   mismatch_counter = 0
   low_battery = False
-  speed_limit_last = 0
 
   rk = Ratekeeper(rate, print_delay_threshold=2. / 1000)
 
@@ -533,8 +530,8 @@ def controlsd_thread(gctx=None, rate=100, default_bias=0.):
 
     if not passive:
       # update control state
-      state, soft_disable_timer, v_cruise_kph, v_cruise_kph_last, speed_limit_last = \
-        state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM, PL, speed_limit_last)
+      state, soft_disable_timer, v_cruise_kph, v_cruise_kph_last = \
+        state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM)
       prof.checkpoint("State transition")
 
     # Compute actuators (runs PID loops and lateral MPC)
