@@ -573,12 +573,10 @@ class CarInterface(object):
 
       if b.type == "altButton1" and b.pressed:
         events.append(create_event('buttonCancel', [ET.USER_DISABLE]))
-        targetWait = cur_time + 0.3
-        while cur_time > targetWait:
-            continue
+        time.sleep(.5)
         self.last_enable_pressed = cur_time
         enable_pressed = True
-        events.append(create_event('buttonEnable', [ET.ENABLE]))
+        #events.append(create_event('buttonEnable', [ET.ENABLE]))
 
     if self.CP.enableCruise:
       # KEEP THIS EVENT LAST! send enable event if button is pressed and there are
