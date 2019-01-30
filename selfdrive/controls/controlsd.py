@@ -244,7 +244,7 @@ def state_control(plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, 
 
   last_live_map_data = PL.last_live_map_data
   if last_live_map_data:
-      if  params.get("LimitSetSpeed") == "1" and last_live_map_data.speedLimitValid:
+      if last_live_map_data.speedLimitValid and params.get("LimitSetSpeed") == "1":
           speed_limit = last_live_map_data.speedLimit
           if speed_limit > 21.90496:
               v_cruise_kph = int(round(speed_limit + float(16 * CV.MPH_TO_MS)) * CV.MS_TO_KPH)
