@@ -161,6 +161,7 @@ class CarState(object):
     self.cruise_buttons = 0
     self.cruise_setting = 0
     self.v_cruise_pcm_prev = 0
+    self.speed_limit_prev = 0
     self.blinker_on = 0
 
     self.left_blinker_on = 0
@@ -298,7 +299,17 @@ class CarState(object):
     else:
       self.brake_switch = cp.vl["POWERTRAIN_DATA"]['BRAKE_SWITCH']
       self.cruise_speed_offset = calc_cruise_offset(cp.vl["CRUISE_PARAMS"]['CRUISE_SPEED_OFFSET'], self.v_ego)
-      self.v_cruise_pcm = cp.vl["CRUISE"]['CRUISE_SPEED_PCM']
+      #self.v_cruise_pcm = cp.vl["CRUISE"]['CRUISE_SPEED_PCM']
+      live_speed_file = '/data/live_speed_file'
+
+      if cp.vl["CRUISE"]['CRUISE_SPEED_PCM'] != self.speed_limit_prev:
+        self.speed_limit_prev = cp.vl["CRUISE"]['CRUISE_SPEED_PCM']
+        self.v_cruise_pcm = cp.vl["CRUISE"]['CRUISE_SPEED_PCM']
+        with open(live_speed_file, 'w') as f:
+          f.write(str(self.speed_limit_prev))
+      else:
+        speed = open(live_speed_file, "r")
+        self.v_cruise_pcm = float(speed.read())
       # brake switch has shown some single time step noise, so only considered when
       # switch is on for at least 2 consecutive CAN samples
       self.brake_pressed = cp.vl["POWERTRAIN_DATA"]['BRAKE_PRESSED'] or \
