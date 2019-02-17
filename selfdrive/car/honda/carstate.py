@@ -306,7 +306,7 @@ class CarState(object):
         self.speed_limit_prev = cp.vl["CRUISE"]['CRUISE_SPEED_PCM']
         self.v_cruise_pcm = cp.vl["CRUISE"]['CRUISE_SPEED_PCM']
         with open(live_speed_file, 'w') as f:
-          f.write(str(self.speed_limit_prev))
+            f.write(str(self.speed_limit_prev))
       else:
         speed = open(live_speed_file, "r")
         self.v_cruise_pcm = float(speed.read())
