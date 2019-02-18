@@ -90,9 +90,9 @@ class CarInterface(object):
     self.brake_pressed_prev = False
     self.can_invalid_count = 0
     self.cam_can_invalid_count = 0
-    self.keep_update_on = False
-    self.keep_this_frame = 0
-    self.keep_this_speed = 255
+    # self.keep_update_on = False
+    # self.keep_this_frame = 0
+    # self.keep_this_speed = 255
 
     self.cp = get_can_parser(CP)
     self.cp_cam = get_cam_can_parser(CP)
@@ -601,15 +601,15 @@ class CarInterface(object):
 
     pcm_accel = int(clip(c.cruiseControl.accelOverride,0,1)*0xc6)
 
-    if c.hudControl.updateSpeed:
-        self.keep_update_on = True
-        self.keep_this_frame = self.frame + 600
-        self.keep_this_speed = c.hudControl.setSpeed * CV.MS_TO_KPH
-
-    if self.frame > self.keep_this_frame:
-        self.keep_update_on = False
-    else:
-        hud_v_cruise = self.keep_this_speed
+    # if c.hudControl.updateSpeed:
+    #     self.keep_update_on = True
+    #     self.keep_this_frame = self.frame + 600
+    #     self.keep_this_speed = c.hudControl.setSpeed * CV.MS_TO_KPH
+    #
+    # if self.frame > self.keep_this_frame:
+    #     self.keep_update_on = False
+    # else:
+    #     hud_v_cruise = self.keep_this_speed
 
     self.CC.update(self.sendcan, c.enabled, self.CS, self.frame, \
       c.actuators, \
@@ -618,7 +618,7 @@ class CarInterface(object):
       c.cruiseControl.cancel, \
       pcm_accel, \
       perception_state.radarErrors, \
-      self.keep_update_on, \
+      c.hudControl.updateSpeed, \
       hud_v_cruise, c.hudControl.lanesVisible, \
       hud_show_car = c.hudControl.leadVisible, \
       hud_follow_distance = c.hudControl.followDistance, \
