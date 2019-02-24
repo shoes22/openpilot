@@ -1,1 +1,1 @@
-#define COMMA_VERSION "0.5.8-alex-noautosetspeed2"
+#define COMMA_VERSION "0.5.9-alex-noautosetspeed"
