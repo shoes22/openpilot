@@ -348,16 +348,14 @@ class Planner(object):
     set_speed_limit_active = self.params.get("LimitSetSpeed") == "1" and self.params.get("SpeedLimitOffset") is not None
     if set_speed_limit_active:
       if live_map_data.liveMapData.speedLimitValid:
-        set_speed_limit_active = self.params.get("LimitSetSpeed") == "1" and self.params.get("SpeedLimitOffset") is not None
         speed_limit = live_map_data.liveMapData.speedLimit
-        if set_speed_limit_active:
-          offset = float(self.params.get("SpeedLimitOffset"))
-          #self.v_speedlimit = speed_limit + offset
-          #commented out above line, we're hardcoding offset dynamically instead of using the manual setting
-          if speed_limit > 21.90496:
-              self.v_speedlimit = speed_limit + float(11 * CV.MPH_TO_MS)
-          else:
-              self.v_speedlimit = speed_limit + float(6 * CV.MPH_TO_MS)
+        offset = float(self.params.get("SpeedLimitOffset"))
+        #self.v_speedlimit = speed_limit + offset
+        #commented out above line, we're hardcoding offset dynamically instead of using the manual setting
+        if speed_limit > 21.90496:
+            self.v_speedlimit = speed_limit + float(11 * CV.MPH_TO_MS)
+        else:
+            self.v_speedlimit = speed_limit + float(6 * CV.MPH_TO_MS)
 
       if live_map_data.liveMapData.curvatureValid:
         curvature = abs(live_map_data.liveMapData.curvature)
