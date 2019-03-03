@@ -611,7 +611,7 @@ class CarInterface(object):
                    hud_v_cruise,
                    c.hudControl.lanesVisible,
                    hud_show_car=c.hudControl.leadVisible,
-                   hud_follow_distance = c.hudControl.followDistance,
+                   hud_follow_distance=c.hudControl.followDistance,
                    hud_alert=hud_alert,
                    snd_beep=snd_beep,
                    snd_chime=snd_chime)
