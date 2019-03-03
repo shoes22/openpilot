@@ -333,6 +333,10 @@ class Planner(object):
     v_cruise_kph = live100.live100.vCruise
     force_slow_decel = live100.live100.forceDecel
 
+    self.v_speedlimit = NO_CURVATURE_SPEED
+    self.v_curvature = NO_CURVATURE_SPEED
+    self.map_valid = live_map_data.liveMapData.mapValid
+
     # Speed limit
     self.set_speed_override = False
     set_speed_limit_active = self.params.get("LimitSetSpeed") == "1" and self.params.get("SpeedLimitOffset") is not None
@@ -354,6 +358,12 @@ class Planner(object):
                 v_cruise_kph = int((speed_limit + float(10 * CV.MPH_TO_MS)) * CV.MS_TO_KPH)
             self.speed_limit_last = speed_limit
             self.speed_override = v_cruise_kph
+        # Set Curvature
+        if live_map_data.liveMapData.curvatureValid:
+            curvature = abs(live_map_data.liveMapData.curvature)
+            a_y_max = 2.975 - v_ego * 0.0375  # ~1.85 @ 75mph, ~2.6 @ 25mph
+            v_curvature = math.sqrt(a_y_max / max(1e-4, curvature))
+            self.v_curvature = min(NO_CURVATURE_SPEED, v_curvature)
 
     v_cruise_setpoint = v_cruise_kph * CV.KPH_TO_MS
 
@@ -366,17 +376,6 @@ class Planner(object):
 
     enabled = (long_control_state == LongCtrlState.pid) or (long_control_state == LongCtrlState.stopping)
     following = self.lead_1.status and self.lead_1.dRel < 45.0 and self.lead_1.vLeadK > v_ego and self.lead_1.aLeadK > 0.0
-
-    self.v_speedlimit = NO_CURVATURE_SPEED
-    self.v_curvature = NO_CURVATURE_SPEED
-    self.map_valid = live_map_data.liveMapData.mapValid
-
-    # Set Curvature
-    if live_map_data.liveMapData.curvatureValid:
-        curvature = abs(live_map_data.liveMapData.curvature)
-        a_y_max = 2.975 - v_ego * 0.0375  # ~1.85 @ 75mph, ~2.6 @ 25mph
-        v_curvature = math.sqrt(a_y_max / max(1e-4, curvature))
-        self.v_curvature = min(NO_CURVATURE_SPEED, v_curvature)
 
     self.decel_for_turn = bool(self.v_curvature < min([v_cruise_setpoint, self.v_speedlimit, v_ego + 1.]))
     v_cruise_setpoint = min([v_cruise_setpoint, self.v_curvature, self.v_speedlimit])
