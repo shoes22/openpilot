@@ -372,7 +372,7 @@ class Planner(object):
     self.map_valid = live_map_data.liveMapData.mapValid
 
     # Set Curvature
-      if live_map_data.liveMapData.curvatureValid:
+    if live_map_data.liveMapData.curvatureValid:
         curvature = abs(live_map_data.liveMapData.curvature)
         a_y_max = 2.975 - v_ego * 0.0375  # ~1.85 @ 75mph, ~2.6 @ 25mph
         v_curvature = math.sqrt(a_y_max / max(1e-4, curvature))
