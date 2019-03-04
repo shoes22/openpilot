@@ -114,20 +114,10 @@ def data_sample(CI, CC, plan_sock, path_plan_sock, thermal, calibration, health,
   return CS, events, cal_status, cal_perc, overtemp, free_space, low_battery, mismatch_counter, plan, path_plan
 
 
-def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM, plan, rk, keep_this_frame, keep_this_speed):
+def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM, update_speed_limit, keep_this_speed):
   """Compute conditional state transitions and execute actions on state transitions"""
   enabled = isEnabled(state)
   params = Params()
-
-  update_speed_limit = False
-
-  if plan.setSpeedOverride:
-    keep_this_frame = rk.frame + 2000
-    keep_this_speed = plan.speedOverride
-
-  if keep_this_frame > rk.frame:
-    v_cruise_kph = keep_this_speed
-    update_speed_limit = True
 
   v_cruise_kph_last = v_cruise_kph
 
@@ -214,7 +204,7 @@ def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM
     elif not get_events(events, [ET.PRE_ENABLE]):
       state = State.enabled
 
-  return state, soft_disable_timer, v_cruise_kph, v_cruise_kph_last, keep_this_speed, keep_this_frame, update_speed_limit
+  return state, soft_disable_timer, v_cruise_kph, v_cruise_kph_last, keep_this_speed
 
 
 def state_control(plan, path_plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, AM, rk,
@@ -493,7 +483,7 @@ def controlsd_thread(gctx=None, rate=100):
   speed_limit_last = 0
   update_speed_limit = False
   keep_this_frame = 0
-  keep_this_speed = 255
+  keep_this_speed = 0
 
   plan = messaging.new_message()
   plan.init('plan')
@@ -522,6 +512,15 @@ def controlsd_thread(gctx=None, rate=100):
                   state, mismatch_counter, params, plan, path_plan)
     prof.checkpoint("Sample")
 
+    update_speed_limit = False
+
+    if plan.plan.setSpeedOverride:
+        keep_this_frame = rk.frame + 2000
+        keep_this_speed = plan.plan.speedOverride
+
+    if keep_this_frame > rk.frame:
+        v_cruise_kph = keep_this_speed
+        update_speed_limit = True
     path_plan_age = (start_time - path_plan.logMonoTime) / 1e9
     plan_age = (start_time - plan.logMonoTime) / 1e9
     if not path_plan.pathPlan.valid or plan_age > 0.5 or path_plan_age > 0.5:
@@ -534,8 +533,8 @@ def controlsd_thread(gctx=None, rate=100):
 
     if not passive:
       # update control state
-      state, soft_disable_timer, v_cruise_kph, v_cruise_kph_last, keep_this_speed, keep_this_frame, update_speed_limit = \
-        state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM, plan.plan, rk, keep_this_frame, keep_this_speed)
+      state, soft_disable_timer, v_cruise_kph, v_cruise_kph_last, keep_this_speed = \
+        state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM, update_speed_limit, keep_this_speed)
       prof.checkpoint("State transition")
 
     # Compute actuators (runs PID loops and lateral MPC)
