@@ -582,7 +582,8 @@ struct Plan {
   vCurvature @21 :Float32;
   decelForTurn @22 :Bool;
   mapValid @25 :Bool;
-
+  setSpeedOverride @28 :Bool;
+  speedOverride @29 :Float32;
 
   struct GpsTrajectory {
     x @0 :List(Float32);
