@@ -107,9 +107,7 @@ def create_ui_commands(packer, pcm_speed, hud, car_fingerprint, idx):
 
     if hud.update_speed:
         cruise_values = {
-        'CRUISE_SPEED_PCM' : hud.v_cruise,
-        'HUD_SPEED_KPH': hud.v_cruise,
-        'HUD_SPEED_MPH': int(hud.v_cruise * CV.KPH_TO_MPH)
+        'CRUISE_SPEED_PCM' : hud.v_cruise
         }
         commands.append(packer.make_can_msg('CRUISE', 0, cruise_values, idx))
   return commands
