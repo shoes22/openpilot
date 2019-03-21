@@ -130,7 +130,7 @@ def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM
         v_cruise_kph = update_v_cruise(v_cruise_kph, CS.buttonEvents, enabled)
         keep_this_speed = v_cruise_kph
     else:
-        v_cruise_kph = CS.cruiseState.speed2 * CV.KPH_TO_MPH
+        v_cruise_kph = CS.cruiseState.speed * CV.MS_TO_KPH
 
   # decrease the soft disable timer at every step, as it's reset on
   # entrance in SOFT_DISABLING state
@@ -327,7 +327,7 @@ def data_send(plan, path_plan, CS, CI, CP, VM, state, events, actuators, v_cruis
     CC.cruiseControl.accelOverride = CI.calc_accel_override(CS.aEgo, plan.aTarget, CS.vEgo, plan.vTarget)
 
     CC.hudControl.setSpeed = float(v_cruise_kph * CV.KPH_TO_MS)
-    CC.hudControl.speedVisible = isEnabled(state)
+    CC.hudControl.speedVisible = isEnabled(state) or update_speed_limit
     CC.hudControl.lanesVisible = isEnabled(state)
     CC.hudControl.leadVisible = plan.hasLead
     CC.hudControl.rightLaneVisible = bool(path_plan.pathPlan.rProb > 0.5)
