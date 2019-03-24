@@ -130,7 +130,7 @@ def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM
         v_cruise_kph = update_v_cruise(v_cruise_kph, CS.buttonEvents, enabled)
         keep_this_speed = v_cruise_kph
     else:
-        v_cruise_kph = CS.cruiseState.speed * CV.MS_TO_KPH
+        v_cruise_kph = CS.cruiseState.speed2
 
   # decrease the soft disable timer at every step, as it's reset on
   # entrance in SOFT_DISABLING state
