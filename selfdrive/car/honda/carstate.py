@@ -90,7 +90,7 @@ def get_can_signals(CP):
     signals += [("BRAKE_ERROR_1", "STANDSTILL", 1),
                 ("BRAKE_ERROR_2", "STANDSTILL", 1),
                 ("CRUISE_SPEED_PCM", "CRUISE", 0),
-                ("HUD_SPEED_MPH", "CRUISE", 0),
+                ("HUD_SPEED_KPH", "CRUISE", 0),
                 ("CRUISE_SPEED_OFFSET", "CRUISE_PARAMS", 0)]
     checks += [("CRUISE_PARAMS", 50),
                ("STANDSTILL", 50)]
@@ -297,7 +297,7 @@ class CarState(object):
       self.brake_switch = cp.vl["POWERTRAIN_DATA"]['BRAKE_SWITCH']
       self.cruise_speed_offset = calc_cruise_offset(cp.vl["CRUISE_PARAMS"]['CRUISE_SPEED_OFFSET'], self.v_ego)
       self.v_cruise_pcm = cp.vl["CRUISE"]['CRUISE_SPEED_PCM']
-      self.v_cruise_kph = cp.vl["CRUISE"]['HUD_SPEED_MPH']
+      self.v_cruise_kph = cp.vl["CRUISE"]['HUD_SPEED_KPH']
       # brake switch has shown some single time step noise, so only considered when
       # switch is on for at least 2 consecutive CAN samples
       self.brake_pressed = cp.vl["POWERTRAIN_DATA"]['BRAKE_PRESSED'] or \
