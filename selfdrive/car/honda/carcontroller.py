@@ -127,7 +127,7 @@ class CarController(object):
     if CS.CP.radarOffCan:
       snd_beep = snd_beep if snd_beep != 0 else snd_chime
 
-    #print chime, alert_id, hud_alert
+    #print("{0} {1} {2}".format(chime, alert_id, hud_alert))
     fcw_display, steer_required, acc_alert = process_hud_alert(hud_alert)
 
     hud = HUDData(int(pcm_accel), int(round(hud_v_cruise)), update_speed, 1, hud_car, enable_lines, hud_lines, 0xc1, hud_lanes, int(snd_beep), snd_chime, fcw_display, acc_alert, steer_required)
@@ -140,6 +140,8 @@ class CarController(object):
       STEER_MAX = 0xF00
     elif CS.CP.carFingerprint in (CAR.CRV, CAR.ACURA_RDX):
       STEER_MAX = 0x3e8  # CR-V only uses 12-bits and requires a lower value (max value from energee)
+    elif CS.CP.carFingerprint in (CAR.ODYSSEY_CHN):
+      STEER_MAX = 0x7FFF
     else:
       STEER_MAX = 0x1000
 
