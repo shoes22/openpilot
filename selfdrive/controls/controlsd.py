@@ -369,7 +369,7 @@ def data_send(plan, path_plan, CS, CI, CP, VM, state, events, actuators, v_cruis
     "engageable": not bool(get_events(events, [ET.NO_ENTRY])),
     "longControlState": LoC.long_control_state,
     "vPid": float(LoC.v_pid),
-    "vCruise": float(v_cruise_kph),
+    "vCruise": float(CS.cruiseState.speed2),
     "upAccelCmd": float(LoC.pid.p),
     "uiAccelCmd": float(LoC.pid.i),
     "ufAccelCmd": float(LoC.pid.f),
