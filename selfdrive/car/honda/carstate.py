@@ -107,7 +107,7 @@ def get_can_signals(CP):
     signals += [("BRAKE_ERROR_1", "STANDSTILL", 1),
                 ("BRAKE_ERROR_2", "STANDSTILL", 1),
                 ("CRUISE_SPEED_PCM", "CRUISE", 0),
-                ("HUD_SPEED_KPH", "CRUISE", 0),
+                ("CRUISE_SPEED", "ACC_HUD", 0),
                 ("CRUISE_SPEED_OFFSET", "CRUISE_PARAMS", 0)]
     checks += [("STANDSTILL", 50)]
 
