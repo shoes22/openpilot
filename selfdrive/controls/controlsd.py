@@ -125,12 +125,13 @@ def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM
   if not CP.enableCruise:
     v_cruise_kph = update_v_cruise(v_cruise_kph, CS.buttonEvents, enabled)
   elif CP.enableCruise and CS.cruiseState.enabled:
-    #v_cruise_kph = CS.cruiseState.speed * CV.MS_TO_KPH
+    v_cruise_kph = CS.cruiseState.speed * CV.MS_TO_KPH
     if update_speed_limit:
         v_cruise_kph = update_v_cruise(v_cruise_kph, CS.buttonEvents, enabled)
-        keep_this_speed = v_cruise_kph
-    else:
-        v_cruise_kph = CS.cruiseState.speed * CV.MS_TO_KPH
+        if keep_this_speed <= v_cruise_kph:
+            update_speed_limit = False
+  else:
+      update_speed_limit = False
 
   # decrease the soft disable timer at every step, as it's reset on
   # entrance in SOFT_DISABLING state
@@ -204,7 +205,7 @@ def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM
     elif not get_events(events, [ET.PRE_ENABLE]):
       state = State.enabled
 
-  return state, soft_disable_timer, v_cruise_kph, v_cruise_kph_last, keep_this_speed
+  return state, soft_disable_timer, v_cruise_kph, v_cruise_kph_last, update_speed_limit
 
 
 def state_control(plan, path_plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, AM, rk,
@@ -307,7 +308,7 @@ def state_control(plan, path_plan, CS, CP, state, events, v_cruise_kph, v_cruise
 
 def data_send(plan, path_plan, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk, carstate,
               carcontrol, live100, AM, driver_status,
-              LaC, LoC, angle_model_bias, passive, start_time, v_acc, a_acc, set_follow_distance, update_speed_limit):
+              LaC, LoC, angle_model_bias, passive, start_time, v_acc, a_acc, set_follow_distance, keep_this_speed, update_speed_limit):
   """Send actuators and hud commands to the car, send live100 and MPC logging"""
   plan_ts = plan.logMonoTime
   plan = plan.plan
@@ -327,6 +328,7 @@ def data_send(plan, path_plan, CS, CI, CP, VM, state, events, actuators, v_cruis
     CC.cruiseControl.accelOverride = CI.calc_accel_override(CS.aEgo, plan.aTarget, CS.vEgo, plan.vTarget)
 
     CC.hudControl.setSpeed = float(v_cruise_kph * CV.KPH_TO_MS)
+    CC.hudControl.setSpeed2 = float(keep_this_speed * CV.KPH_TO_MS)
     CC.hudControl.speedVisible = isEnabled(state) or update_speed_limit
     CC.hudControl.lanesVisible = isEnabled(state)
     CC.hudControl.leadVisible = plan.hasLead
@@ -369,7 +371,7 @@ def data_send(plan, path_plan, CS, CI, CP, VM, state, events, actuators, v_cruis
     "engageable": not bool(get_events(events, [ET.NO_ENTRY])),
     "longControlState": LoC.long_control_state,
     "vPid": float(LoC.v_pid),
-    "vCruise": float(CS.cruiseState.speed2),
+    "vCruise": float(CS.cruiseState.speed),
     "upAccelCmd": float(LoC.pid.p),
     "uiAccelCmd": float(LoC.pid.i),
     "ufAccelCmd": float(LoC.pid.f),
@@ -512,15 +514,13 @@ def controlsd_thread(gctx=None, rate=100):
                   state, mismatch_counter, params, plan, path_plan)
     prof.checkpoint("Sample")
 
-    update_speed_limit = False
-
     if plan.plan.setSpeedOverride:
-        keep_this_frame = rk.frame + 2000
+        #keep_this_frame = rk.frame + 2000
         keep_this_speed = plan.plan.speedOverride
-
-    if keep_this_frame > rk.frame:
-        v_cruise_kph = keep_this_speed
         update_speed_limit = True
+
+    if update_speed_limit:
+        v_cruise_kph = keep_this_speed
     path_plan_age = (start_time - path_plan.logMonoTime) / 1e9
     plan_age = (start_time - plan.logMonoTime) / 1e9
     if not path_plan.pathPlan.valid or plan_age > 0.5 or path_plan_age > 0.5:
@@ -535,7 +535,7 @@ def controlsd_thread(gctx=None, rate=100):
 
     if not passive:
       # update control state
-      state, soft_disable_timer, v_cruise_kph, v_cruise_kph_last, keep_this_speed = \
+      state, soft_disable_timer, v_cruise_kph, v_cruise_kph_last, update_speed_limit = \
         state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM, update_speed_limit, keep_this_speed)
       prof.checkpoint("State transition")
 
@@ -549,7 +549,7 @@ def controlsd_thread(gctx=None, rate=100):
 
     # Publish data
     CC = data_send(plan, path_plan, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk, carstate, carcontrol,
-                   live100, AM, driver_status, LaC, LoC, angle_model_bias, passive, start_time, v_acc, a_acc, set_follow_distance, update_speed_limit)
+                   live100, AM, driver_status, LaC, LoC, angle_model_bias, passive, start_time, v_acc, a_acc, set_follow_distance, keep_this_speed, update_speed_limit)
     prof.checkpoint("Sent")
 
     rk.keep_time()  # Run at 100Hz

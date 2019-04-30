@@ -444,7 +444,7 @@ class CarInterface(object):
     # cruise state
     ret.cruiseState.enabled = self.CS.pcm_acc_status != 0
     ret.cruiseState.speed = self.CS.v_cruise_pcm * CV.KPH_TO_MS
-    ret.cruiseState.speed2 = self.CS.v_cruise_kph
+    ret.cruiseState.speed2 = self.CS.v_cruise_kph * CV.KPH_TO_MS
     ret.cruiseState.available = bool(self.CS.main_on)
     ret.cruiseState.speedOffset = self.CS.cruise_speed_offset
     ret.cruiseState.standstill = False
@@ -620,7 +620,10 @@ class CarInterface(object):
   # to be called @ 100hz
   def apply(self, c):
     if c.hudControl.speedVisible:
-      hud_v_cruise = c.hudControl.setSpeed * CV.MS_TO_KPH
+        if c.hudControl.updateSpeed:
+            hud_v_cruise = c.hudControl.setSpeed2 * CV.MS_TO_KPH
+        else:
+            hud_v_cruise = c.hudControl.setSpeed * CV.MS_TO_KPH
     else:
       hud_v_cruise = 255
 
