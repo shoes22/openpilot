@@ -114,7 +114,7 @@ def data_sample(CI, CC, plan_sock, path_plan_sock, thermal, calibration, health,
   return CS, events, cal_status, cal_perc, overtemp, free_space, low_battery, mismatch_counter, plan, path_plan
 
 
-def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM, update_speed_limit, keep_this_speed):
+def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM, update_speed_limit, keep_this_speed, rk, keep_this_frame):
   """Compute conditional state transitions and execute actions on state transitions"""
   enabled = isEnabled(state)
   params = Params()
@@ -127,10 +127,10 @@ def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM
   elif CP.enableCruise and CS.cruiseState.enabled:
     v_cruise_kph = CS.cruiseState.speed * CV.MS_TO_KPH
     if update_speed_limit:
-        v_cruise_kph = update_v_cruise(v_cruise_kph, CS.buttonEvents, enabled)
+        #v_cruise_kph = update_v_cruise(v_cruise_kph, CS.buttonEvents, enabled)
         if keep_this_speed <= v_cruise_kph:
             update_speed_limit = False
-  else:
+  elif keep_this_frame <= rk.frame:
       update_speed_limit = False
 
   # decrease the soft disable timer at every step, as it's reset on
@@ -371,7 +371,7 @@ def data_send(plan, path_plan, CS, CI, CP, VM, state, events, actuators, v_cruis
     "engageable": not bool(get_events(events, [ET.NO_ENTRY])),
     "longControlState": LoC.long_control_state,
     "vPid": float(LoC.v_pid),
-    "vCruise": float(CS.cruiseState.speed),
+    "vCruise": float(CS.cruiseState.speed * CV.MS_TO_KPH),
     "upAccelCmd": float(LoC.pid.p),
     "uiAccelCmd": float(LoC.pid.i),
     "ufAccelCmd": float(LoC.pid.f),
@@ -515,7 +515,7 @@ def controlsd_thread(gctx=None, rate=100):
     prof.checkpoint("Sample")
 
     if plan.plan.setSpeedOverride:
-        #keep_this_frame = rk.frame + 2000
+        keep_this_frame = rk.frame + 2000
         keep_this_speed = plan.plan.speedOverride
         update_speed_limit = True
 
@@ -536,7 +536,7 @@ def controlsd_thread(gctx=None, rate=100):
     if not passive:
       # update control state
       state, soft_disable_timer, v_cruise_kph, v_cruise_kph_last, update_speed_limit = \
-        state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM, update_speed_limit, keep_this_speed)
+        state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM, update_speed_limit, keep_this_speed, rk, keep_this_frame)
       prof.checkpoint("State transition")
 
     # Compute actuators (runs PID loops and lateral MPC)
