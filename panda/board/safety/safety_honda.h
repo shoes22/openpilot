@@ -160,7 +160,7 @@ static int honda_fwd_hook(int bus_num, CAN_FIFOMailBox_TypeDef *to_fwd) {
   if (bus_num == 0) {
     return 2;
   } else if (bus_num == 2 && addr != 0xE4 && addr != 0x194 && addr != 0x1FA &&
-             addr != 0x30C && addr != 0x33D && addr != 0x39F) {
+             addr != 0x30C && addr != 0x33D && addr != 0x39F && addr != 0x296) {
     return 0;
   }
 
