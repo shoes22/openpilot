@@ -127,11 +127,10 @@ def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM
   elif CP.enableCruise and CS.cruiseState.enabled:
     v_cruise_kph = CS.cruiseState.speed * CV.MS_TO_KPH
     if update_speed_limit:
-        #v_cruise_kph = update_v_cruise(v_cruise_kph, CS.buttonEvents, enabled)
         if keep_this_speed <= v_cruise_kph:
             update_speed_limit = False
         else:
-            v_cruise_kph = keep_this_speed
+            v_cruise_kph = update_v_cruise(v_cruise_kph, CS.buttonEvents, enabled)
   elif keep_this_frame <= rk.frame:
       update_speed_limit = False
 
