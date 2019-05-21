@@ -186,9 +186,8 @@ class CarInterface(object):
     # Tire stiffness factor fictitiously lower if it includes the steering column torsion effect.
     # For modeling details, see p.198-200 in "The Science of Vehicle Dynamics (2014), M. Guiggiani"
 
-    ret.steerKiBP, ret.steerKpBP = [[0.], [0.]]
-
-    ret.steerKf = 0.00006 # conservative feed-forward
+    ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
+    ret.lateralTuning.pid.kf = 0.00006 # conservative feed-forward
 
     if candidate in [CAR.CIVIC, CAR.CIVIC_BOSCH]:
       stop_and_go = True
@@ -200,13 +199,13 @@ class CarInterface(object):
       # Civic at comma has modified steering FW, so different tuning for the Neo in that car
       is_fw_modified = os.getenv("DONGLE_ID") in ['99c94dc769b5d96e']
       if is_fw_modified:
-        ret.steerKf = 0.00004
+        ret.lateralTuning.pid.kf = 0.00004
 
-      ret.steerKpV, ret.steerKiV = [[0.4], [0.12]] if is_fw_modified else [[0.8], [0.24]]
-      ret.longitudinalKpBP = [0., 5., 35.]
-      ret.longitudinalKpV = [3.6, 2.4, 1.5]
-      ret.longitudinalKiBP = [0., 35.]
-      ret.longitudinalKiV = [0.54, 0.36]
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.4], [0.12]] if is_fw_modified else [[0.8], [0.24]]
+      ret.longitudinalTuning.kpBP = [0., 5., 35.]
+      ret.longitudinalTuning.kpV = [3.6, 2.4, 1.5]
+      ret.longitudinalTuning.kiBP = [0., 35.]
+      ret.longitudinalTuning.kiV = [0.54, 0.36]
 
     elif candidate in (CAR.ACCORD, CAR.ACCORD_15, CAR.ACCORDH):
       stop_and_go = True
@@ -217,11 +216,11 @@ class CarInterface(object):
       ret.centerToFront = ret.wheelbase * 0.39
       ret.steerRatio = 15.96  # 11.82 is spec end-to-end
       tire_stiffness_factor = 0.8467
-      ret.steerKpV, ret.steerKiV = [[0.6], [0.18]]
-      ret.longitudinalKpBP = [0., 5., 35.]
-      ret.longitudinalKpV = [1.2, 0.8, 0.5]
-      ret.longitudinalKiBP = [0., 35.]
-      ret.longitudinalKiV = [0.18, 0.12]
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.6], [0.18]]
+      ret.longitudinalTuning.kpBP = [0., 5., 35.]
+      ret.longitudinalTuning.kpV = [1.2, 0.8, 0.5]
+      ret.longitudinalTuning.kiBP = [0., 35.]
+      ret.longitudinalTuning.kiV = [0.18, 0.12]
 
     elif candidate == CAR.ACURA_ILX:
       stop_and_go = False
@@ -230,11 +229,11 @@ class CarInterface(object):
       ret.centerToFront = ret.wheelbase * 0.37
       ret.steerRatio = 18.61  # 15.3 is spec end-to-end
       tire_stiffness_factor = 0.72
-      ret.steerKpV, ret.steerKiV = [[0.8], [0.24]]
-      ret.longitudinalKpBP = [0., 5., 35.]
-      ret.longitudinalKpV = [1.2, 0.8, 0.5]
-      ret.longitudinalKiBP = [0., 35.]
-      ret.longitudinalKiV = [0.18, 0.12]
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.8], [0.24]]
+      ret.longitudinalTuning.kpBP = [0., 5., 35.]
+      ret.longitudinalTuning.kpV = [1.2, 0.8, 0.5]
+      ret.longitudinalTuning.kiBP = [0., 35.]
+      ret.longitudinalTuning.kiV = [0.18, 0.12]
 
     elif candidate == CAR.CRV:
       stop_and_go = False
@@ -243,11 +242,11 @@ class CarInterface(object):
       ret.centerToFront = ret.wheelbase * 0.41
       ret.steerRatio = 15.3         # as spec
       tire_stiffness_factor = 0.444 # not optimized yet
-      ret.steerKpV, ret.steerKiV = [[0.8], [0.24]]
-      ret.longitudinalKpBP = [0., 5., 35.]
-      ret.longitudinalKpV = [1.2, 0.8, 0.5]
-      ret.longitudinalKiBP = [0., 35.]
-      ret.longitudinalKiV = [0.18, 0.12]
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.8], [0.24]]
+      ret.longitudinalTuning.kpBP = [0., 5., 35.]
+      ret.longitudinalTuning.kpV = [1.2, 0.8, 0.5]
+      ret.longitudinalTuning.kiBP = [0., 35.]
+      ret.longitudinalTuning.kiV = [0.18, 0.12]
 
     elif candidate == CAR.CRV_5G:
       stop_and_go = True
@@ -257,11 +256,11 @@ class CarInterface(object):
       ret.centerToFront = ret.wheelbase * 0.41
       ret.steerRatio = 16.0   # 12.3 is spec end-to-end
       tire_stiffness_factor = 0.677
-      ret.steerKpV, ret.steerKiV = [[0.6], [0.18]]
-      ret.longitudinalKpBP = [0., 5., 35.]
-      ret.longitudinalKpV = [1.2, 0.8, 0.5]
-      ret.longitudinalKiBP = [0., 35.]
-      ret.longitudinalKiV = [0.18, 0.12]
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.6], [0.18]]
+      ret.longitudinalTuning.kpBP = [0., 5., 35.]
+      ret.longitudinalTuning.kpV = [1.2, 0.8, 0.5]
+      ret.longitudinalTuning.kiBP = [0., 35.]
+      ret.longitudinalTuning.kiV = [0.18, 0.12]
 
     elif candidate == CAR.CRV_HYBRID:
       stop_and_go = True
@@ -271,11 +270,11 @@ class CarInterface(object):
       ret.centerToFront = ret.wheelbase * 0.41
       ret.steerRatio = 16.0   # 12.3 is spec end-to-end
       tire_stiffness_factor = 0.677
-      ret.steerKpV, ret.steerKiV = [[0.6], [0.18]]
-      ret.longitudinalKpBP = [0., 5., 35.]
-      ret.longitudinalKpV = [1.2, 0.8, 0.5]
-      ret.longitudinalKiBP = [0., 35.]
-      ret.longitudinalKiV = [0.18, 0.12]
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.6], [0.18]]
+      ret.longitudinalTuning.kpBP = [0., 5., 35.]
+      ret.longitudinalTuning.kpV = [1.2, 0.8, 0.5]
+      ret.longitudinalTuning.kiBP = [0., 35.]
+      ret.longitudinalTuning.kiV = [0.18, 0.12]
 
     elif candidate == CAR.ACURA_RDX:
       stop_and_go = False
@@ -284,11 +283,11 @@ class CarInterface(object):
       ret.centerToFront = ret.wheelbase * 0.38
       ret.steerRatio = 15.0         # as spec
       tire_stiffness_factor = 0.444 # not optimized yet
-      ret.steerKpV, ret.steerKiV = [[0.8], [0.24]]
-      ret.longitudinalKpBP = [0., 5., 35.]
-      ret.longitudinalKpV = [1.2, 0.8, 0.5]
-      ret.longitudinalKiBP = [0., 35.]
-      ret.longitudinalKiV = [0.18, 0.12]
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.8], [0.24]]
+      ret.longitudinalTuning.kpBP = [0., 5., 35.]
+      ret.longitudinalTuning.kpV = [1.2, 0.8, 0.5]
+      ret.longitudinalTuning.kiBP = [0., 35.]
+      ret.longitudinalTuning.kiV = [0.18, 0.12]
 
     elif candidate == CAR.ODYSSEY:
       stop_and_go = False
@@ -297,11 +296,11 @@ class CarInterface(object):
       ret.centerToFront = ret.wheelbase * 0.41
       ret.steerRatio = 14.35        # as spec
       tire_stiffness_factor = 0.82
-      ret.steerKpV, ret.steerKiV = [[0.45], [0.135]]
-      ret.longitudinalKpBP = [0., 5., 35.]
-      ret.longitudinalKpV = [1.2, 0.8, 0.5]
-      ret.longitudinalKiBP = [0., 35.]
-      ret.longitudinalKiV = [0.18, 0.12]
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.45], [0.135]]
+      ret.longitudinalTuning.kpBP = [0., 5., 35.]
+      ret.longitudinalTuning.kpV = [1.2, 0.8, 0.5]
+      ret.longitudinalTuning.kiBP = [0., 35.]
+      ret.longitudinalTuning.kiV = [0.18, 0.12]
 
     elif candidate == CAR.ODYSSEY_CHN:
       stop_and_go = False
@@ -310,11 +309,11 @@ class CarInterface(object):
       ret.centerToFront = ret.wheelbase * 0.41 # from CAR.ODYSSEY
       ret.steerRatio = 14.35 # from CAR.ODYSSEY
       tire_stiffness_factor = 0.82 # from CAR.ODYSSEY
-      ret.steerKpV, ret.steerKiV = [[0.45], [0.135]]
-      ret.longitudinalKpBP = [0., 5., 35.]
-      ret.longitudinalKpV = [1.2, 0.8, 0.5]
-      ret.longitudinalKiBP = [0., 35.]
-      ret.longitudinalKiV = [0.18, 0.12]
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.45], [0.135]]
+      ret.longitudinalTuning.kpBP = [0., 5., 35.]
+      ret.longitudinalTuning.kpV = [1.2, 0.8, 0.5]
+      ret.longitudinalTuning.kiBP = [0., 35.]
+      ret.longitudinalTuning.kiV = [0.18, 0.12]
 
     elif candidate in (CAR.PILOT, CAR.PILOT_2019):
       stop_and_go = False
@@ -323,11 +322,11 @@ class CarInterface(object):
       ret.centerToFront = ret.wheelbase * 0.41
       ret.steerRatio = 16.0         # as spec
       tire_stiffness_factor = 0.444 # not optimized yet
-      ret.steerKpV, ret.steerKiV = [[0.38], [0.11]]
-      ret.longitudinalKpBP = [0., 5., 35.]
-      ret.longitudinalKpV = [1.2, 0.8, 0.5]
-      ret.longitudinalKiBP = [0., 35.]
-      ret.longitudinalKiV = [0.18, 0.12]
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.38], [0.11]]
+      ret.longitudinalTuning.kpBP = [0., 5., 35.]
+      ret.longitudinalTuning.kpV = [1.2, 0.8, 0.5]
+      ret.longitudinalTuning.kiBP = [0., 35.]
+      ret.longitudinalTuning.kiV = [0.18, 0.12]
 
     elif candidate == CAR.RIDGELINE:
       stop_and_go = False
@@ -336,11 +335,11 @@ class CarInterface(object):
       ret.centerToFront = ret.wheelbase * 0.41
       ret.steerRatio = 15.59        # as spec
       tire_stiffness_factor = 0.444 # not optimized yet
-      ret.steerKpV, ret.steerKiV = [[0.38], [0.11]]
-      ret.longitudinalKpBP = [0., 5., 35.]
-      ret.longitudinalKpV = [1.2, 0.8, 0.5]
-      ret.longitudinalKiBP = [0., 35.]
-      ret.longitudinalKiV = [0.18, 0.12]
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.38], [0.11]]
+      ret.longitudinalTuning.kpBP = [0., 5., 35.]
+      ret.longitudinalTuning.kpV = [1.2, 0.8, 0.5]
+      ret.longitudinalTuning.kiBP = [0., 35.]
+      ret.longitudinalTuning.kiV = [0.18, 0.12]
 
     else:
       raise ValueError("unsupported car %s" % candidate)
@@ -379,8 +378,8 @@ class CarInterface(object):
     ret.brakeMaxBP = [5., 20.]  # m/s
     ret.brakeMaxV = [1., 0.8]   # max brake allowed
 
-    ret.longPidDeadzoneBP = [0.]
-    ret.longPidDeadzoneV = [0.]
+    ret.longitudinalTuning.deadzoneBP = [0.]
+    ret.longitudinalTuning.deadzoneV = [0.]
 
     ret.stoppingControl = True
     ret.steerLimitAlert = True
