@@ -93,6 +93,10 @@ static int honda_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
                       (brake_prev && ego_speed);
   int current_controls_allowed = controls_allowed && !(pedal_pressed);
 
+  if ((to_send->RIR>>21) == 0x296) {
+    
+  }
+
   // BRAKE: safety check
   if ((to_send->RIR>>21) == 0x1FA) {
     if (current_controls_allowed) {
