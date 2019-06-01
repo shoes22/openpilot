@@ -94,7 +94,7 @@ static int honda_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
   int current_controls_allowed = controls_allowed && !(pedal_pressed);
 
   if ((to_send->RIR>>21) == 0x296) {
-    
+
   }
 
   // BRAKE: safety check
@@ -124,7 +124,7 @@ static int honda_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
     }
   }
 
-  controls_allowed = 1
+  controls_allowed = 1;
 
   // FORCE CANCEL: safety check only relevant when spamming the cancel button in Bosch HW
   // ensuring that only the cancel button press is sent (VAL 2) when controls are off.
