@@ -293,7 +293,7 @@ ALERTS = [
 
   Alert(
       "sensorDataInvalidNoEntry",
-      "openpilot Unavailable",
+      "alexpilot Unavailable",
       "No Data from EON Sensors",
       AlertStatus.normal, AlertSize.mid,
       Priority.LOW, VisualAlert.none, AudibleAlert.chimeError, .4, 2., 3.),

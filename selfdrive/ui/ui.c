@@ -2191,7 +2191,7 @@ static void ui_update(UIState *s) {
 
       zmq_msg_close(&msg);
 
-    } else if (polls[8].revents)
+    } else if (polls[7].revents)
     {
       // gps socket
 
