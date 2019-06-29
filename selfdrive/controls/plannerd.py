@@ -41,7 +41,7 @@ def plannerd_thread():
   radar_state_sock = messaging.sub_sock(context, service_list['radarState'].port, conflate=True, poller=poller)
   model_sock = messaging.sub_sock(context, service_list['model'].port, conflate=True, poller=poller)
   live_parameters_sock = messaging.sub_sock(context, service_list['liveParameters'].port, conflate=True, poller=poller)
-  # live_map_data_sock = messaging.sub_sock(context, service_list['liveMapData'].port, conflate=True, poller=poller)
+  live_map_data_sock = messaging.sub_sock(context, service_list['liveMapData'].port, conflate=True, poller=poller)
 
   car_state = messaging.new_message()
   car_state.init('carState')
@@ -80,8 +80,8 @@ def plannerd_thread():
       elif socket is radar_state_sock:
         radar_state = msg
         PL.update(rcv_times, car_state, CP, VM, PP, radar_state, controls_state, model, live_map_data)
-      # elif socket is live_map_data_sock:
-      #   live_map_data = msg
+      elif socket is live_map_data_sock:
+        live_map_data = msg
 
 
 def main(gctx=None):
