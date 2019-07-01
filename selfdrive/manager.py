@@ -144,6 +144,7 @@ car_started_processes = [
   'visiond',
   'proclogd',
   'ubloxd',
+  'mapd',
   'gpsd',
   'deleter',
 ]
