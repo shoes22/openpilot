@@ -150,6 +150,12 @@ struct FrameData {
   }
 }
 
+struct Thumbnail {
+  frameId @0 :UInt32;
+  timestampEof @1 :UInt64;
+  thumbnail @2 :Data;
+}
+
 struct GPSNMEAData {
   timestamp @0 :Int64;
   localWallTime @1 :UInt64;
@@ -508,12 +514,15 @@ struct ModelData {
     prob @1 :Float32;
     std @2 :Float32;
     stds @3 :List(Float32);
+    poly @4 :List(Float32);
   }
 
   struct LeadData {
     dist @0 :Float32;
     prob @1 :Float32;
     std @2 :Float32;
+    relVel @3 :Float32;
+    relVelStd @4 :Float32;
   }
 
   struct ModelSettings {
@@ -576,6 +585,8 @@ struct LogRotate {
 struct Plan {
   mdMonoTime @9 :UInt64;
   radarStateMonoTime @10 :UInt64;
+  commIssue @31 :Bool;
+
   eventsDEPRECATED @13 :List(Car.CarEvent);
 
   # lateral, 3rd order polynomial
@@ -616,7 +627,7 @@ struct Plan {
   setSpeedOverride @31 :Bool;
   speedOverride @32 :Float32;
   radarValid @28 :Bool;
-  radarCommIssue @30 :Bool;
+  radarCanError @30 :Bool;
 
   processingDelay @29 :Float32;
 
@@ -647,11 +658,12 @@ struct PathPlan {
 
   angleSteers @8 :Float32; # deg
   rateSteers @13 :Float32; # deg/s
-  valid @9 :Bool;
+  mpcSolutionValid @9 :Bool;
   paramsValid @10 :Bool;
-  modelValid @12 :Bool;
+  modelValidDEPRECATED @12 :Bool;
   angleOffset @11 :Float32;
   sensorValid @14 :Bool;
+  commIssue @15 :Bool;
 }
 
 struct LiveLocationData {
@@ -1648,6 +1660,7 @@ struct LiveParametersData {
   stiffnessFactor @4 :Float32;
   steerRatio @5 :Float32;
   sensorValid @6 :Bool;
+  yawRate @7 :Float32;
 }
 
 struct LiveMapData {
@@ -1687,6 +1700,7 @@ struct KalmanOdometry {
 struct Event {
   # in nanoseconds?
   logMonoTime @0 :UInt64;
+  valid @67 :Bool = true;
 
   union {
     initData @1 :InitData;
@@ -1754,5 +1768,8 @@ struct Event {
     cameraOdometry @63 :CameraOdometry;
     pathPlan @64 :PathPlan;
     kalmanOdometry @65 :KalmanOdometry;
+    thumbnail @66: Thumbnail;
+    carEvents @68: List(Car.CarEvent);
+    carParams @69: Car.CarParams;
   }
 }

@@ -69,6 +69,7 @@ keys = {
   "UploadDone": [TxType.CLEAR_ON_MANAGER_START],
   "IsMetric": [TxType.PERSISTENT],
   "IsUpdateAvailable": [TxType.PERSISTENT],
+  "IsUploadRawEnabled": [TxType.PERSISTENT],
   "IsUploadVideoOverCellularEnabled": [TxType.CLEAR_ON_MANAGER_START],
   "LimitSetSpeed": [TxType.PERSISTENT],
   "LiveParameters": [TxType.PERSISTENT],
