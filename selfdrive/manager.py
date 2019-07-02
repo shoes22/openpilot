@@ -100,7 +100,6 @@ managed_processes = {
   "plannerd": "selfdrive.controls.plannerd",
   "radard": "selfdrive.controls.radard",
   "ubloxd": ("selfdrive/locationd", ["./ubloxd"]),
-  #"mapd": "selfdrive.mapd.mapd",
   "loggerd": ("selfdrive/loggerd", ["./loggerd"]),
   "logmessaged": "selfdrive.logmessaged",
   "tombstoned": "selfdrive.tombstoned",
@@ -116,6 +115,7 @@ managed_processes = {
   "gpsd": ("selfdrive/sensord", ["./start_gpsd.py"]),
   "updated": "selfdrive.updated",
   "athena": "selfdrive.athena.athenad",
+  "mapd": "selfdrive.mapd.mapd",
 }
 android_packages = ("ai.comma.plus.offroad", "ai.comma.plus.frame")
 
@@ -151,9 +151,9 @@ car_started_processes = [
   'visiond',
   'proclogd',
   'ubloxd',
-  #'mapd',
   'gpsd',
   'deleter',
+  'mapd',
 ]
 
 def register_managed_process(name, desc, car_started=False):
