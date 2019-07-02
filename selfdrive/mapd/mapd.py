@@ -23,7 +23,6 @@ default_speeds_generator.main(DEFAULT_SPEEDS_BY_REGION_JSON_FILE)
 import os
 import sys
 import time
-import zmq
 import threading
 import numpy as np
 import overpy
@@ -130,10 +129,9 @@ def query_thread():
 def mapsd_thread():
   global last_gps
 
-  context = zmq.Context()
-  gps_sock = messaging.sub_sock(context, service_list['gpsLocation'].port, conflate=True)
-  gps_external_sock = messaging.sub_sock(context, service_list['gpsLocationExternal'].port, conflate=True)
-  map_data_sock = messaging.pub_sock(context, service_list['liveMapData'].port)
+  gps_sock = messaging.sub_sock(service_list['gpsLocation'].port, conflate=True)
+  gps_external_sock = messaging.sub_sock(service_list['gpsLocationExternal'].port, conflate=True)
+  map_data_sock = messaging.pub_sock(service_list['liveMapData'].port)
 
   cur_way = None
   curvature_valid = False

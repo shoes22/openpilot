@@ -49,7 +49,7 @@ def plannerd_thread():
     if sm.updated['radarState']:
       PL.update(sm, CP, VM, PP, live_map_data)
     if sm.updated['liveMapData']:
-      live_map_data = sm['liveMapData']
+      live_map_data.liveMapData = sm['liveMapData']
     # elif socket is live_map_data_sock:
     #   live_map_data = msg
 
