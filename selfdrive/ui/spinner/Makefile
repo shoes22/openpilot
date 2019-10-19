@@ -56,7 +56,7 @@ img_spinner_track.o: ../../assets/img_spinner_track.png
 	@echo "[ bin2o ] $@"
 	cd '$(dir $<)' && ld -r -b binary '$(notdir $<)' -o '$(abspath $@)'
 
-img_spinner_comma.o: ../../assets/img_spinner_comma.png
+img_spinner_comma.o: ../../assets/img_alex_logo.png
 	@echo "[ bin2o ] $@"
 	cd '$(dir $<)' && ld -r -b binary '$(notdir $<)' -o '$(abspath $@)'
 
