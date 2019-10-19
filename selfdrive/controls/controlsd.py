@@ -316,7 +316,7 @@ def state_control(frame, rcv_frame, plan, path_plan, CS, CP, state, events, v_cr
   return actuators, v_cruise_kph, driver_status, v_acc_sol, a_acc_sol, lac_log, set_follow_distance
 
 
-def data_send(sm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk, AM,
+def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk, AM,
               driver_status, LaC, LoC, read_only, start_time, v_acc, a_acc, lac_log, events_prev, set_follow_distance, keep_this_speed, update_speed_limit):
   """Send actuators and hud commands to the car, send controlsstate and MPC logging"""
 
