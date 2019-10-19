@@ -245,13 +245,16 @@ def uploader_fn(exit_event):
     allow_cellular = (params.get("IsUploadVideoOverCellularEnabled") != b"0")
     on_hotspot = is_on_hotspot()
     on_wifi = is_on_wifi()
-    should_upload = allow_cellular or (on_wifi and not on_hotspot)
+    #I changed the "or" to "and" below to prevent upload while using my phone's mobile hotspot. -Alex 12/13/2018
+    should_upload = allow_cellular and (on_wifi and not on_hotspot)
 
     if exit_event.is_set():
       return
 
     d = uploader.next_file_to_upload(with_raw=allow_raw_upload and should_upload)
     if d is None:
+      if params.get("HasUpload") == "1":
+          params.put("UploadDone", "1")
       time.sleep(5)
       continue
 
@@ -259,7 +262,9 @@ def uploader_fn(exit_event):
 
     cloudlog.event("uploader_netcheck", allow_cellular=allow_cellular, is_on_hotspot=on_hotspot, is_on_wifi=on_wifi)
     cloudlog.info("to upload %r", d)
+    params.put("UploadDone", "0")
     success = uploader.upload(key, fn)
+    params.put("HasUpload", "1")
     if success:
       backoff = 0.1
     else:

@@ -14,6 +14,7 @@ LOG_MPC = os.environ.get('LOG_MPC', False)
 class LongitudinalMpc():
   def __init__(self, mpc_id):
     self.mpc_id = mpc_id
+    self.TR = 1.8
 
     self.setup_mpc()
     self.v_mpc = 0.0
@@ -92,7 +93,20 @@ class LongitudinalMpc():
 
     # Calculate mpc
     t = sec_since_boot()
-    n_its = self.libmpc.run_mpc(self.cur_state, self.mpc_solution, self.a_lead_tau, a_lead)
+    distanceToggle = CS.carState.followDistance
+
+    if distanceToggle == 3:
+        self.TR = 2.1
+    elif distanceToggle == 2:
+        self.TR = 1.8
+    elif distanceToggle == 1:
+        self.TR = 1.5
+    else:
+        self.TR = 1.2
+    if CS.carState.vEgo < 15.65:
+        self.TR = 1.8 # under 56.34km/hr use a TR of 1.8 seconds
+
+    n_its = self.libmpc.run_mpc(self.cur_state, self.mpc_solution, self.a_lead_tau, a_lead, self.TR)
     duration = int((sec_since_boot() - t) * 1e9)
 
     if LOG_MPC:

@@ -101,6 +101,7 @@ struct CarState {
   yawRate @22 :Float32;     # best estimate of yaw rate
   standstill @18 :Bool;
   wheelSpeeds @2 :WheelSpeeds;
+  followDistance @27 :Int16;
 
   # gas pedal, 0.0-1.0
   gas @3 :Float32;        # this is user + computer
@@ -155,6 +156,7 @@ struct CarState {
     available @2 :Bool;
     speedOffset @3 :Float32;
     standstill @4 :Bool;
+    speed2 @5 :Float32;
   }
 
   enum GearShifter {
@@ -270,6 +272,9 @@ struct CarControl {
     leftLaneVisible @7: Bool;
     rightLaneDepart @8: Bool;
     leftLaneDepart @9: Bool;
+    followDistance @10: Int16;
+    updateSpeed @11: Bool;
+    setSpeed2 @12: Float32;
 
     enum VisualAlert {
       # these are the choices from the Honda

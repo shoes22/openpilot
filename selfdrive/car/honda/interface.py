@@ -393,6 +393,7 @@ class CarInterface(CarInterfaceBase):
     ret.wheelSpeeds.fr = self.CS.v_wheel_fr
     ret.wheelSpeeds.rl = self.CS.v_wheel_rl
     ret.wheelSpeeds.rr = self.CS.v_wheel_rr
+    ret.followDistance = self.CS.hud_follow_distance
 
     # gas pedal
     ret.gas = self.CS.car_gas / 256.0
@@ -424,6 +425,7 @@ class CarInterface(CarInterfaceBase):
     ret.cruiseState.enabled = self.CS.pcm_acc_status != 0
     ret.cruiseState.speed = self.CS.v_cruise_pcm * CV.KPH_TO_MS
     ret.cruiseState.available = bool(self.CS.main_on) and not bool(self.CS.cruise_mode)
+    ret.cruiseState.speed2 = self.CS.v_cruise_kph * CV.KPH_TO_MS
     ret.cruiseState.speedOffset = self.CS.cruise_speed_offset
     ret.cruiseState.standstill = False
 
@@ -477,6 +479,8 @@ class CarInterface(CarInterfaceBase):
         but = self.CS.prev_cruise_setting
       if but == 1:
         be.type = ButtonType.altButton1
+      elif but == 3:
+        be.type = ButtonType.altButton2
       # TODO: more buttons?
       buttonEvents.append(be)
     ret.buttonEvents = buttonEvents
@@ -572,7 +576,10 @@ class CarInterface(CarInterfaceBase):
   # to be called @ 100hz
   def apply(self, c):
     if c.hudControl.speedVisible:
-      hud_v_cruise = c.hudControl.setSpeed * CV.MS_TO_KPH
+        if c.hudControl.updateSpeed:
+            hud_v_cruise = c.hudControl.setSpeed2 * CV.MS_TO_KPH
+        else:
+            hud_v_cruise = c.hudControl.setSpeed * CV.MS_TO_KPH
     else:
       hud_v_cruise = 255
 
@@ -586,9 +593,11 @@ class CarInterface(CarInterfaceBase):
                                c.cruiseControl.override,
                                c.cruiseControl.cancel,
                                pcm_accel,
+                               c.hudControl.updateSpeed,
                                hud_v_cruise,
                                c.hudControl.lanesVisible,
                                hud_show_car=c.hudControl.leadVisible,
+                               hud_follow_distance = c.hudControl.followDistance,
                                hud_alert=hud_alert)
 
     self.frame += 1

@@ -507,9 +507,15 @@ def main():
   if params.get("IsUploadRawEnabled") is None:
     params.put("IsUploadRawEnabled", "1")
   if params.get("IsUploadVideoOverCellularEnabled") is None:
-    params.put("IsUploadVideoOverCellularEnabled", "1")
+    params.put("IsUploadVideoOverCellularEnabled", "0")
   if params.get("IsGeofenceEnabled") is None:
     params.put("IsGeofenceEnabled", "-1")
+  if params.get("CarFollowDistance") is None:
+    params.put("CarFollowDistance", "3")
+  if params.get("HasUpload") is None:
+    params.put("HasUpload", "0")
+  if params.get("UploadDone") is None:
+    params.put("UploadDone", "0")
   if params.get("SpeedLimitOffset") is None:
     params.put("SpeedLimitOffset", "0")
   if params.get("LongitudinalControl") is None:
