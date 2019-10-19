@@ -93,7 +93,7 @@ class LongitudinalMpc():
 
     # Calculate mpc
     t = sec_since_boot()
-    distanceToggle = CS.carState.followDistance
+    distanceToggle = CS.followDistance
 
     if distanceToggle == 3:
         self.TR = 2.1
@@ -103,7 +103,7 @@ class LongitudinalMpc():
         self.TR = 1.5
     else:
         self.TR = 1.2
-    if CS.carState.vEgo < 15.65:
+    if CS.vEgo < 15.65:
         self.TR = 1.8 # under 56.34km/hr use a TR of 1.8 seconds
 
     n_its = self.libmpc.run_mpc(self.cur_state, self.mpc_solution, self.a_lead_tau, a_lead, self.TR)
