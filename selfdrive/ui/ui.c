@@ -2014,6 +2014,8 @@ void handle_message(UIState *s, void *which) {
     }
     s->scene.v_cruise = datad.vCruise;
     s->scene.v_ego = datad.vEgo;
+    s->scene.angleSteers = datad.angleSteers;
+		s->scene.angleSteersDes = datad.angleSteersDes;
     s->scene.curvature = datad.curvature;
     s->scene.engaged = datad.enabled;
     s->scene.engageable = datad.engageable;
@@ -2146,6 +2148,24 @@ void handle_message(UIState *s, void *which) {
     }
 
     s->scene.started_ts = datad.startedTs;
+
+    //BBB CPU TEMP
+    s->scene.maxCpuTemp=datad.cpu0;
+    if (s->scene.maxCpuTemp<datad.cpu1)
+    {
+       s->scene.maxCpuTemp=datad.cpu1;
+    }
+    else if (s->scene.maxCpuTemp<datad.cpu2)
+    {
+       s->scene.maxCpuTemp=datad.cpu2;
+    }
+    else if (s->scene.maxCpuTemp<datad.cpu3)
+    {
+       s->scene.maxCpuTemp=datad.cpu3;
+    }
+    s->scene.maxBatTemp=datad.bat;
+    s->scene.freeSpace=datad.freeSpace;
+    //BBB END CPU TEMP
   } else if (eventd.which == cereal_Event_uiLayoutState) {
     struct cereal_UiLayoutState datad;
     cereal_read_UiLayoutState(&datad, eventd.uiLayoutState);
