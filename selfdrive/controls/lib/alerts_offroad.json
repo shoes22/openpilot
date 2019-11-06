@@ -8,12 +8,12 @@
     "severity": 1
   },
   "Offroad_ConnectivityNeededPrompt": {
-    "text": "Connect to internet to check for updates. openpilot won't engage in ",
+    "text": "Connect to internet to check for updates. alexpilot won't engage in ",
     "severity": 0,
     "_comment": "Append the number of days at the end of the text"
   },
   "Offroad_ConnectivityNeeded": {
-    "text": "Connect to internet to check for updates. openpilot won't engage.",
+    "text": "Connect to internet to check for updates. alexpilot won't engage.",
     "severity": 1
   },
   "Offroad_PandaFirmwareMismatch": {

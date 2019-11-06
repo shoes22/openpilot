@@ -82,8 +82,8 @@ ALERTS = [
 
   Alert(
       "steerSaturated",
-      "TAKE CONTROL",
-      "Turn Exceeds Hardcoded Steering Limit",
+      "WARNING",
+      "Manual Assistance May Be Needed on this Turn",
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.LOW, VisualAlert.steerRequired, AudibleAlert.chimePrompt, 1., 2., 3.),
 
@@ -633,7 +633,7 @@ ALERTS = [
 
   Alert(
       "invalidGiraffeToyotaNoEntry",
-      "openpilot Unavailable",
+      "alexpilot Unavailable",
       "Visit comma.ai/tg",
       AlertStatus.normal, AlertSize.mid,
       Priority.LOW, VisualAlert.none, AudibleAlert.chimeDisengage, .4, 2., 3.),
