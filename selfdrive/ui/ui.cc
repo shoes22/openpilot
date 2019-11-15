@@ -2014,9 +2014,9 @@ void handle_message(UIState *s, Message * msg) {
   struct cereal_Event eventd;
   cereal_read_Event(&eventd, eventp);
   double t = millis_since_boot();
-  if (eventd.which == cereal_Event_gpsLocation) {
+  if (eventd.which == cereal_Event_gpsLocationExternal) {
     struct cereal_GpsLocationData datad;
-    cereal_read_GpsLocationData(&datad, eventd.gpsLocation);
+    cereal_read_GpsLocationData(&datad, eventd.gpsLocationExternal);
 
     s->scene.gpsAccuracy= datad.accuracy;
     if (s->scene.gpsAccuracy>100)
