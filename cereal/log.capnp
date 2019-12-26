@@ -702,6 +702,8 @@ struct Plan {
   vCurvature @21 :Float32;
   decelForTurn @22 :Bool;
   mapValid @25 :Bool;
+  setSpeedOverride @33 :Bool;
+  speedOverride @32 :Float32;
   radarValid @28 :Bool;
   radarCanError @30 :Bool;
 

@@ -81,6 +81,10 @@ class Planner():
 
     self.params = Params()
 
+    self.speed_limit_last = 0
+    self.set_speed_override = False
+    self.speed_override = 0
+
   def choose_solution(self, v_cruise_setpoint, enabled):
     if enabled:
       solutions = {'model': self.v_model, 'cruise': self.v_cruise}
@@ -226,6 +230,12 @@ class Planner():
     plan_send.plan.hasLead = self.mpc1.prev_lead_status
     plan_send.plan.longitudinalPlanSource = self.longitudinalPlanSource
 
+    #plan_send.plan.vCurvature = v_curvature
+    #plan_send.plan.decelForTurn = decel_for_turn
+    #plan_send.plan.mapValid = map_valid
+
+    #plan_send.plan.setSpeedOverride = self.set_speed_override
+    #plan_send.plan.speedOverride = self.speed_override
     radar_valid = not (radar_dead or radar_fault)
     plan_send.plan.radarValid = bool(radar_valid)
     plan_send.plan.radarCanError = bool(radar_can_error)

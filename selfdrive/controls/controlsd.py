@@ -150,9 +150,10 @@ def data_sample(CI, CC, sm, can_sock, driver_status, state, mismatch_counter, pa
   return CS, events, cal_perc, mismatch_counter
 
 
-def state_transition(frame, CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM):
+def state_transition(frame, CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM, update_speed_limit, keep_this_speed, rk, keep_this_frame):
   """Compute conditional state transitions and execute actions on state transitions"""
   enabled = isEnabled(state)
+  params = Params()
 
   v_cruise_kph_last = v_cruise_kph
 
@@ -161,6 +162,13 @@ def state_transition(frame, CS, CP, state, events, soft_disable_timer, v_cruise_
     v_cruise_kph = update_v_cruise(v_cruise_kph, CS.buttonEvents, enabled)
   elif CP.enableCruise and CS.cruiseState.enabled:
     v_cruise_kph = CS.cruiseState.speed * CV.MS_TO_KPH
+    if update_speed_limit:
+        if keep_this_speed <= v_cruise_kph:
+            update_speed_limit = False
+        else:
+            v_cruise_kph = update_v_cruise(v_cruise_kph, CS.buttonEvents, enabled)
+  elif keep_this_frame <= rk.frame:
+      update_speed_limit = False
 
   # decrease the soft disable timer at every step, as it's reset on
   # entrance in SOFT_DISABLING state
@@ -234,7 +242,7 @@ def state_transition(frame, CS, CP, state, events, soft_disable_timer, v_cruise_
     elif not get_events(events, [ET.PRE_ENABLE]):
       state = State.enabled
 
-  return state, soft_disable_timer, v_cruise_kph, v_cruise_kph_last
+  return state, soft_disable_timer, v_cruise_kph, v_cruise_kph_last, update_speed_limit
 
 
 def state_control(frame, rcv_frame, plan, path_plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last,
@@ -245,11 +253,30 @@ def state_control(frame, rcv_frame, plan, path_plan, CS, CP, state, events, v_cr
 
   enabled = isEnabled(state)
   active = isActive(state)
+  params = Params()
 
   # check if user has interacted with the car
   driver_engaged = len(CS.buttonEvents) > 0 or \
-                   v_cruise_kph != v_cruise_kph_last or \
-                   CS.steeringPressed
+                    v_cruise_kph != v_cruise_kph_last or \
+                    CS.steeringPressed
+
+  set_follow_distance = int(params.get("CarFollowDistance"))
+
+  for b in CS.buttonEvents:
+    # button presses for rear view, right-blinker disabled mod by Alex on 7/7/18
+    if (b.type == "altButton2" and b.pressed):
+        if set_follow_distance > 0:
+            set_follow_distance -= 1
+        else:
+            set_follow_distance = 3
+        params.put("CarFollowDistance", str(set_follow_distance))
+
+
+#    if b.type == "leftBlinker":
+#      rear_view_toggle = b.pressed and rear_view_allowed
+#
+#    if (b.type == "altButton1" and b.pressed) and not passive:
+#      rear_view_toggle = not rear_view_toggle
 
   if CS.leftBlinker or CS.rightBlinker:
     last_blinker_frame = frame
@@ -310,12 +337,12 @@ def state_control(frame, rcv_frame, plan, path_plan, CS, CP, state, events, v_cr
         extra_text_2 = str(int(round(Filter.MIN_SPEED * CV.MS_TO_MPH))) + " mph"
     AM.add(frame, str(e) + "Permanent", enabled, extra_text_1=extra_text_1, extra_text_2=extra_text_2)
 
-  return actuators, v_cruise_kph, driver_status, v_acc_sol, a_acc_sol, lac_log, last_blinker_frame
+  return actuators, v_cruise_kph, driver_status, v_acc_sol, a_acc_sol, lac_log, last_blinker_frame, set_follow_distance
 
 
 def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk, AM,
               driver_status, LaC, LoC, read_only, start_time, v_acc, a_acc, lac_log, events_prev,
-              last_blinker_frame, is_ldw_enabled):
+              last_blinker_frame, is_ldw_enabled, set_follow_distance, keep_this_speed, update_speed_limit):
   """Send actuators and hud commands to the car, send controlsstate and MPC logging"""
 
   CC = car.CarControl.new_message()
@@ -331,6 +358,7 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
   CC.cruiseControl.accelOverride = CI.calc_accel_override(CS.aEgo, sm['plan'].aTarget, CS.vEgo, sm['plan'].vTarget)
 
   CC.hudControl.setSpeed = float(v_cruise_kph * CV.KPH_TO_MS)
+  CC.hudControl.setSpeed2 = float(keep_this_speed * CV.KPH_TO_MS)
   CC.hudControl.speedVisible = isEnabled(state)
   CC.hudControl.lanesVisible = isEnabled(state)
   CC.hudControl.leadVisible = sm['plan'].hasLead
@@ -361,6 +389,8 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
 
   AM.process_alerts(sm.frame)
   CC.hudControl.visualAlert = AM.visual_alert
+  CC.hudControl.followDistance = set_follow_distance
+  CC.hudControl.updateSpeed = update_speed_limit
 
   if not read_only:
     # send car controls over can
@@ -530,6 +560,10 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
   v_cruise_kph = 255
   v_cruise_kph_last = 0
   mismatch_counter = 0
+  speed_limit_last = 0
+  update_speed_limit = False
+  keep_this_frame = 0
+  keep_this_speed = 0
   last_blinker_frame = 0
   events_prev = []
 
@@ -555,6 +589,14 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
     # Sample data and compute car events
     CS, events, cal_perc, mismatch_counter = data_sample(CI, CC, sm, can_sock, driver_status, state, mismatch_counter, params)
     prof.checkpoint("Sample")
+
+    # if sm['plan'].setSpeedOverride:
+    #     keep_this_frame = rk.frame + 2000
+    #     keep_this_speed = sm['plan'].speedOverride
+    #     update_speed_limit = True
+    #
+    # if update_speed_limit:
+    #     v_cruise_kph = keep_this_speed
 
     # Create alerts
     if not sm.all_alive_and_valid():
@@ -586,12 +628,12 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
 
     if not read_only:
       # update control state
-      state, soft_disable_timer, v_cruise_kph, v_cruise_kph_last = \
-        state_transition(sm.frame, CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM)
+      state, soft_disable_timer, v_cruise_kph, v_cruise_kph_last, update_speed_limit = \
+        state_transition(sm.frame, CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM, update_speed_limit, keep_this_speed, rk, keep_this_frame)
       prof.checkpoint("State transition")
 
     # Compute actuators (runs PID loops and lateral MPC)
-    actuators, v_cruise_kph, driver_status, v_acc, a_acc, lac_log, last_blinker_frame = \
+    actuators, v_cruise_kph, driver_status, v_acc, a_acc, lac_log, last_blinker_frame, set_follow_distance = \
       state_control(sm.frame, sm.rcv_frame, sm['plan'], sm['pathPlan'], CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, AM, rk,
                     driver_status, LaC, LoC, read_only, is_metric, cal_perc, last_blinker_frame)
 
@@ -599,7 +641,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
 
     # Publish data
     CC, events_prev = data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk, AM, driver_status, LaC,
-                                LoC, read_only, start_time, v_acc, a_acc, lac_log, events_prev, last_blinker_frame, is_ldw_enabled)
+                                LoC, read_only, start_time, v_acc, a_acc, lac_log, events_prev, last_blinker_frame, is_ldw_enabled, set_follow_distance, keep_this_speed, update_speed_limit)
     prof.checkpoint("Sent")
 
     rk.monitor_time()

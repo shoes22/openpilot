@@ -547,7 +547,7 @@ static void ui_init(UIState *s) {
   assert(s->font_sans_bold >= 0);
 
   assert(s->img_wheel >= 0);
-  s->img_wheel = nvgCreateImage(s->vg, "../assets/img_chffr_wheel.png", 1);
+  s->img_wheel = nvgCreateImage(s->vg, "../assets/img_alex_logo.png", 1);
 
   assert(s->img_turn >= 0);
   s->img_turn = nvgCreateImage(s->vg, "../assets/img_trafficSign_turn.png", 1);

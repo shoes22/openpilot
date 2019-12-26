@@ -69,8 +69,7 @@ def process_hud_alert(hud_alert):
 
 
 HUDData = namedtuple("HUDData",
-                     ["pcm_accel", "v_cruise", "mini_car", "car", "X4",
-                      "lanes", "fcw", "acc_alert", "steer_required"])
+                     ["pcm_accel", "v_cruise", "update_speed", "mini_car", "car", "show_lines", "follow_lines", "X4", "lanes", "fcw", "acc_alert", "steer_required"])
 
 
 class CarController():
@@ -85,7 +84,8 @@ class CarController():
 
   def update(self, enabled, CS, frame, actuators, \
              pcm_speed, pcm_override, pcm_cancel_cmd, pcm_accel, \
-             hud_v_cruise, hud_show_lanes, hud_show_car, hud_alert):
+             update_speed, hud_v_cruise, hud_show_lanes, hud_show_car, \
+             hud_follow_distance, hud_alert):
 
     # *** apply brake hysteresis ***
     brake, self.braking, self.brake_steady = actuator_hystereses(actuators.brake, self.braking, self.brake_steady, CS.v_ego, CS.CP.carFingerprint)
@@ -105,17 +105,21 @@ class CarController():
       hud_lanes = 0
 
     if enabled:
+      enable_lines = 1
+      hud_lines = int(hud_follow_distance)
       if hud_show_car:
         hud_car = 2
       else:
         hud_car = 1
     else:
       hud_car = 0
+      enable_lines = 0
+      hud_lines = 0
 
     fcw_display, steer_required, acc_alert = process_hud_alert(hud_alert)
 
-    hud = HUDData(int(pcm_accel), int(round(hud_v_cruise)), 1, hud_car,
-                  0xc1, hud_lanes, fcw_display, acc_alert, steer_required)
+    hud = HUDData(int(pcm_accel), int(round(hud_v_cruise)), update_speed, 1, hud_car,
+                  enable_lines, hud_lines, 0xc1, hud_lanes, fcw_display, acc_alert, steer_required)
 
     # **** process the car messages ****
 
@@ -171,5 +175,12 @@ class CarController():
           # send exactly zero if apply_gas is zero. Interceptor will send the max between read value and apply_gas.
           # This prevents unexpected pedal range rescaling
           can_sends.append(create_gas_command(self.packer, apply_gas, idx))
+
+    if enabled and update_speed:
+      idx = frame % 4
+      if (idx % 2) == 1:
+          can_sends.append(hondacan.spam_buttons_command(self.packer, CruiseButtons.RES_ACCEL, idx))
+      else:
+          can_sends.append(hondacan.spam_buttons_command(self.packer, 0, idx))
 
     return can_sends
