@@ -219,8 +219,6 @@ typedef struct UIState {
   SubSocket *controlsstate_sock;
   SubSocket *livecalibration_sock;
   SubSocket *radarstate_sock;
-  SubSocket *livempc_sock;
-  SubSocket *plus_sock;
   SubSocket *gps_sock;
   SubSocket *map_data_sock;
   SubSocket *uilayout_sock;
@@ -516,16 +514,12 @@ static void ui_init(UIState *s) {
   s->uilayout_sock = SubSocket::create(s->ctx, "uiLayoutState");
   s->livecalibration_sock = SubSocket::create(s->ctx, "liveCalibration");
   s->radarstate_sock = SubSocket::create(s->ctx, "radarState");
-  s->livempc_sock = SubSocket::create(s->ctx, "liveMpc");
-  s->plus_sock = SubSocket::create(s->ctx, "plusFrame");
   s->gps_sock = SubSocket::create(s->ctx, "gpsLocationExternal");
   assert(s->model_sock != NULL);
   assert(s->controlsstate_sock != NULL);
   assert(s->uilayout_sock != NULL);
   assert(s->livecalibration_sock != NULL);
   assert(s->radarstate_sock != NULL);
-  assert(s->livempc_sock != NULL);
-  assert(s->plus_sock != NULL);
   assert(s->gps_sock != NULL);
 
   s->poller = Poller::create({
@@ -534,8 +528,6 @@ static void ui_init(UIState *s) {
                               s->uilayout_sock,
                               s->livecalibration_sock,
                               s->radarstate_sock,
-                              s->livempc_sock,
-                              s->plus_sock,
                               s->gps_sock
                              });
 
