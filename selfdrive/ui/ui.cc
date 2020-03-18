@@ -222,6 +222,7 @@ typedef struct UIState {
   SubSocket *gps_sock;
   SubSocket *map_data_sock;
   SubSocket *uilayout_sock;
+  SubSocket *thermal_sock;
   Poller * poller;
 
   int active_app;
@@ -515,12 +516,14 @@ static void ui_init(UIState *s) {
   s->livecalibration_sock = SubSocket::create(s->ctx, "liveCalibration");
   s->radarstate_sock = SubSocket::create(s->ctx, "radarState");
   s->gps_sock = SubSocket::create(s->ctx, "gpsLocationExternal");
+  s->thermal_sock = SubSocket::create(s->ctx, "thermal");
   assert(s->model_sock != NULL);
   assert(s->controlsstate_sock != NULL);
   assert(s->uilayout_sock != NULL);
   assert(s->livecalibration_sock != NULL);
   assert(s->radarstate_sock != NULL);
   assert(s->gps_sock != NULL);
+  assert(s->thermal_sock != NULL);
 
   s->poller = Poller::create({
                               s->model_sock,
@@ -528,7 +531,8 @@ static void ui_init(UIState *s) {
                               s->uilayout_sock,
                               s->livecalibration_sock,
                               s->radarstate_sock,
-                              s->gps_sock
+                              s->gps_sock,
+                              s->thermal_sock
                              });
 
 #ifdef SHOW_SPEEDLIMIT
