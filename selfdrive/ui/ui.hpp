@@ -163,8 +163,10 @@ typedef struct UIState {
   SubSocket *controlsstate_sock;
   SubSocket *livecalibration_sock;
   SubSocket *radarstate_sock;
+  SubSocket *gps_sock;
   SubSocket *map_data_sock;
   SubSocket *uilayout_sock;
+  SubSocket *thermal_sock;
   Poller * poller;
 
   int active_app;
@@ -246,7 +248,7 @@ typedef struct UIState {
 
 // API
 void ui_draw_vision_alert(UIState *s, int va_size, int va_color,
-                          const char* va_text1, const char* va_text2); 
+                          const char* va_text1, const char* va_text2);
 void ui_draw(UIState *s);
 void ui_nvg_init(UIState *s);
 

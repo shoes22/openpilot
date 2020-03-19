@@ -668,7 +668,7 @@ ALERTS = [
 
   Alert(
       "radarCommIssueNoEntry",
-      "openpilot Unavailable",
+      "alexpilot Unavailable",
       "Radar Communication Issue",
       AlertStatus.normal, AlertSize.mid,
       Priority.LOW, VisualAlert.none, AudibleAlert.chimeDisengage, .4, 2., 3.),
