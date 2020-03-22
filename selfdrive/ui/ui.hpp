@@ -115,6 +115,16 @@ typedef struct UIScene {
 
   float awareness_status;
 
+  uint64_t started_ts;
+  //BB CPU TEMP
+  uint16_t maxCpuTemp;
+  uint32_t maxBatTemp;
+  float gpsAccuracy ;
+  float freeSpace;
+  float angleSteers;
+  float angleSteersDes;
+  //BB END CPU TEMP
+
   // Used to show gps planner status
   bool gps_planner_active;
 } UIScene;
