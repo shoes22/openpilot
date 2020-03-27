@@ -151,18 +151,11 @@ ALERTS = [
       Priority.HIGH, VisualAlert.steerRequired, AudibleAlert.chimeWarningRepeat, .1, .1, .1),
 
   Alert(
-      "driverMonitorOff",
-      "FACE MONITOR IS UNAVAILABLE",
-      "Accuracy Is Low",
+      "driverMonitorLowAcc",
+      "CHECK DRIVER FACE VISIBILITY",
+      "Driver Monitor Model Output Uncertain",
       AlertStatus.normal, AlertSize.mid,
-      Priority.LOW, VisualAlert.none, AudibleAlert.none, .4, 0., 4.),
-
-  Alert(
-      "driverMonitorOn",
-      "FACE MONITOR IS AVAILABLE",
-      "Accuracy Is High",
-      AlertStatus.normal, AlertSize.mid,
-      Priority.LOW, VisualAlert.none, AudibleAlert.none, .4, 0., 4.),
+      Priority.LOW, VisualAlert.steerRequired, AudibleAlert.none, .4, 0., 1.),
 
   Alert(
       "geofence",
@@ -176,6 +169,13 @@ ALERTS = [
       "Welcome to Alex\'s car!",
       "Make sure your seatbelts are fastened.",
       AlertStatus.normal, AlertSize.mid,
+      Priority.LOW_LOWEST, VisualAlert.none, AudibleAlert.none, 0., 0., 15.),
+
+  Alert(
+      "startupMaster",
+      "Welcome to Alex\'s car!",
+      "Make sure your seatbelts are fastened.",
+      AlertStatus.userPrompt, AlertSize.mid,
       Priority.LOW_LOWEST, VisualAlert.none, AudibleAlert.none, 0., 0., 15.),
 
   Alert(
@@ -364,7 +364,7 @@ ALERTS = [
   Alert(
       "calibrationInvalid",
       "TAKE CONTROL IMMEDIATELY",
-      "Calibration Invalid: Reposition EON and Recalibrate",
+      "Calibration Invalid: Reposition Device and Recalibrate",
       AlertStatus.critical, AlertSize.full,
       Priority.MID, VisualAlert.steerRequired, AudibleAlert.chimeWarningRepeat, .1, 2., 2.),
 
@@ -435,7 +435,7 @@ ALERTS = [
   Alert(
       "lowMemory",
       "TAKE CONTROL IMMEDIATELY",
-      "Low Memory: Reboot Your EON",
+      "Low Memory: Reboot Your Device",
       AlertStatus.critical, AlertSize.full,
       Priority.MID, VisualAlert.steerRequired, AudibleAlert.chimeWarningRepeat, .1, 2., 2.),
 
@@ -536,7 +536,7 @@ ALERTS = [
   Alert(
       "calibrationInvalidNoEntry",
       "alexpilot Unavailable",
-      "Calibration Invalid: Reposition EON and Recalibrate",
+      "Calibration Invalid: Reposition Device and Recalibrate",
       AlertStatus.normal, AlertSize.mid,
       Priority.LOW, VisualAlert.none, AudibleAlert.chimeError, .4, 2., 3.),
 
@@ -683,7 +683,7 @@ ALERTS = [
   Alert(
       "lowMemoryNoEntry",
       "alexpilot Unavailable",
-      "Low Memory: Reboot Your EON",
+      "Low Memory: Reboot Your Device",
       AlertStatus.normal, AlertSize.mid,
       Priority.LOW, VisualAlert.none, AudibleAlert.chimeDisengage, .4, 2., 3.),
 
@@ -739,22 +739,22 @@ ALERTS = [
 
   Alert(
       "sensorDataInvalidPermanent",
-      "No Data from EON Sensors",
-      "Reboot your EON",
+      "No Data from Device Sensors",
+      "Reboot your Device",
       AlertStatus.normal, AlertSize.mid,
       Priority.LOW_LOWEST, VisualAlert.none, AudibleAlert.none, 0., 0., .2),
 
   Alert(
       "soundsUnavailablePermanent",
       "Speaker not found",
-      "Reboot your EON",
+      "Reboot your Device",
       AlertStatus.normal, AlertSize.mid,
       Priority.LOW_LOWEST, VisualAlert.none, AudibleAlert.none, 0., 0., .2),
 
   Alert(
       "lowMemoryPermanent",
       "RAM Critically Low",
-      "Reboot your EON",
+      "Reboot your Device",
       AlertStatus.normal, AlertSize.mid,
       Priority.LOW_LOWEST, VisualAlert.none, AudibleAlert.none, 0., 0., .2),
 
@@ -776,7 +776,7 @@ ALERTS = [
   Alert(
       "ldwPermanent",
       "TAKE CONTROL",
-      "Lane Departure Detected",
+      "Lane Departure Detected!",
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.LOW, VisualAlert.steerRequired, AudibleAlert.chimePrompt, 1., 2., 3.),
 ]
