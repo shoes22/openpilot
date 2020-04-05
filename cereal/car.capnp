@@ -108,7 +108,7 @@ struct CarState {
   yawRate @22 :Float32;     # best estimate of yaw rate
   standstill @18 :Bool;
   wheelSpeeds @2 :WheelSpeeds;
-  followDistance @32 :Int16;
+  followDistance @35 :Int16;
 
   # gas pedal, 0.0-1.0
   gas @3 :Float32;        # this is user + computer
@@ -152,7 +152,7 @@ struct CarState {
 
   # which packets this state came from
   canMonoTimes @12: List(UInt64);
-  
+
   # blindspot sensors
   leftBlindspot @33 :Bool; # Is there something blocking the left lane change
   rightBlindspot @34 :Bool; # Is there something blocking the right lane change
