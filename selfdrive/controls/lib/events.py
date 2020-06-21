@@ -130,7 +130,7 @@ class Alert:
 class NoEntryAlert(Alert):
   def __init__(self, alert_text_2, audible_alert=AudibleAlert.chimeError,
                visual_alert=VisualAlert.none, duration_hud_alert=2.):
-    super().__init__("openpilot Unavailable", alert_text_2, AlertStatus.normal,
+    super().__init__("alexpilot Unavailable", alert_text_2, AlertStatus.normal,
                      AlertSize.mid, Priority.LOW, visual_alert,
                      audible_alert, .4, duration_hud_alert, 3.)
 
@@ -192,8 +192,8 @@ EVENTS = {
 
   EventName.startup: {
     ET.PERMANENT: Alert(
-      "Be ready to take over at any time",
-      "Always keep hands on wheel and eyes on road",
+      "Welcome to Alex\'s car!",
+      "Make sure your seatbelts are fastened.",
       AlertStatus.normal, AlertSize.mid,
       Priority.LOWER, VisualAlert.none, AudibleAlert.none, 0., 0., 15.),
   },
@@ -209,7 +209,7 @@ EVENTS = {
   EventName.startupMaster: {
     ET.PERMANENT: Alert(
       "WARNING: This branch is not tested",
-      "Always keep hands on wheel and eyes on road",
+      "This is an experimental build of alexPilot!",
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.LOWER, VisualAlert.none, AudibleAlert.none, 0., 0., 15.),
   },
@@ -299,7 +299,7 @@ EVENTS = {
 
   EventName.ldw: {
     ET.PERMANENT: Alert(
-      "TAKE CONTROL",
+      "HEY ALEX!",
       "Lane Departure Detected",
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.LOW, VisualAlert.steerRequired, AudibleAlert.chimePrompt, 1., 2., 3.),
@@ -333,7 +333,7 @@ EVENTS = {
 
   EventName.preDriverDistracted: {
     ET.WARNING: Alert(
-      "KEEP EYES ON ROAD: Driver Distracted",
+      "KEEP EYES ON ROAD: Alex Appears Distracted",
       "",
       AlertStatus.normal, AlertSize.small,
       Priority.LOW, VisualAlert.steerRequired, AudibleAlert.none, .0, .1, .1, alert_rate=0.75),
@@ -342,7 +342,7 @@ EVENTS = {
   EventName.promptDriverDistracted: {
     ET.WARNING: Alert(
       "KEEP EYES ON ROAD",
-      "Driver Appears Distracted",
+      "Alex Appears Distracted",
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.MID, VisualAlert.steerRequired, AudibleAlert.chimeWarning2Repeat, .1, .1, .1),
   },
@@ -350,7 +350,7 @@ EVENTS = {
   EventName.driverDistracted: {
     ET.WARNING: Alert(
       "DISENGAGE IMMEDIATELY",
-      "Driver Was Distracted",
+      "Alex Was Distracted",
       AlertStatus.critical, AlertSize.full,
       Priority.HIGH, VisualAlert.steerRequired, AudibleAlert.chimeWarningRepeat, .1, .1, .1),
   },
@@ -366,7 +366,7 @@ EVENTS = {
   EventName.promptDriverUnresponsive: {
     ET.WARNING: Alert(
       "TOUCH STEERING WHEEL",
-      "Driver Is Unresponsive",
+      "Alex Is Unresponsive",
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.MID, VisualAlert.steerRequired, AudibleAlert.chimeWarning2Repeat, .1, .1, .1),
   },
@@ -374,7 +374,7 @@ EVENTS = {
   EventName.driverUnresponsive: {
     ET.WARNING: Alert(
       "DISENGAGE IMMEDIATELY",
-      "Driver Was Unresponsive",
+      "Alex Was Unresponsive",
       AlertStatus.critical, AlertSize.full,
       Priority.HIGH, VisualAlert.steerRequired, AudibleAlert.chimeWarningRepeat, .1, .1, .1),
   },
@@ -433,8 +433,8 @@ EVENTS = {
 
   EventName.steerSaturated: {
     ET.WARNING: Alert(
-      "TAKE CONTROL",
-      "Turn Exceeds Steering Limit",
+      "WARNING",
+      "Manual Assistance May Be Needed on this Turn",
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.LOW, VisualAlert.steerRequired, AudibleAlert.chimePrompt, 1., 2., 3.),
   },

@@ -345,6 +345,19 @@ class Controls:
 
     actuators = car.CarControl.Actuators.new_message()
 
+    params = Params()
+
+    set_follow_distance = int(params.get("CarFollowDistance"))
+
+    for b in CS.buttonEvents:
+        # button presses for rear view, right-blinker disabled mod by Alex on 7/7/18
+        if (b.type == "altButton2" and b.pressed):
+            if set_follow_distance > 0:
+                set_follow_distance -= 1
+            else:
+                set_follow_distance = 3
+            params.put("CarFollowDistance", str(set_follow_distance))
+
     if CS.leftBlinker or CS.rightBlinker:
       self.last_blinker_frame = self.sm.frame
 
@@ -385,10 +398,10 @@ class Controls:
       if left_deviation or right_deviation:
         self.events.add(EventName.steerSaturated)
 
-    return actuators, v_acc_sol, a_acc_sol, lac_log
+    return actuators, v_acc_sol, a_acc_sol, lac_log, set_follow_distance
 
 
-  def publish_logs(self, CS, start_time, actuators, v_acc, a_acc, lac_log):
+  def publish_logs(self, CS, start_time, actuators, v_acc, a_acc, lac_log, set_follow_distance):
     """Send actuators and hud commands to the car, send controlsstate and MPC logging"""
 
     CC = car.CarControl.new_message()
@@ -406,6 +419,7 @@ class Controls:
     CC.cruiseControl.accelOverride = self.CI.calc_accel_override(CS.aEgo, self.sm['plan'].aTarget, CS.vEgo, self.sm['plan'].vTarget)
 
     CC.hudControl.setSpeed = float(self.v_cruise_kph * CV.KPH_TO_MS)
+    CC.hudControl.setSpeed2 = float(self.v_cruise_kph * CV.KPH_TO_MS)
     CC.hudControl.speedVisible = self.enabled
     CC.hudControl.lanesVisible = self.enabled
     CC.hudControl.leadVisible = self.sm['plan'].hasLead
@@ -436,6 +450,8 @@ class Controls:
     self.AM.add_many(self.sm.frame, alerts, self.enabled)
     self.AM.process_alerts(self.sm.frame)
     CC.hudControl.visualAlert = self.AM.visual_alert
+    CC.hudControl.followDistance = set_follow_distance
+    CC.hudControl.updateSpeed = False
 
     if not self.read_only:
       # send car controls over can
@@ -544,12 +560,12 @@ class Controls:
       self.prof.checkpoint("State transition")
 
     # Compute actuators (runs PID loops and lateral MPC)
-    actuators, v_acc, a_acc, lac_log = self.state_control(CS)
+    actuators, v_acc, a_acc, lac_log, set_follow_distance = self.state_control(CS)
 
     self.prof.checkpoint("State Control")
 
     # Publish data
-    self.publish_logs(CS, start_time, actuators, v_acc, a_acc, lac_log)
+    self.publish_logs(CS, start_time, actuators, v_acc, a_acc, lac_log, set_follow_distance)
     self.prof.checkpoint("Sent")
 
   def controlsd_thread(self):
