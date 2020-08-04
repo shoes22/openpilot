@@ -379,7 +379,7 @@ static void ui_draw_world(UIState *s) {
 }
 
 //BB START: functions added for the display of various items
-static int bb_ui_draw_measure(UIState *s,  const char* bb_value, const char* bb_uom, const char* bb_label,
+/*static int bb_ui_draw_measure(UIState *s,  const char* bb_value, const char* bb_uom, const char* bb_label,
 		int bb_x, int bb_y, int bb_uom_dx,
 		NVGcolor bb_valueColor, NVGcolor bb_labelColor, NVGcolor bb_uomColor,
 		int bb_valueFontSize, int bb_labelFontSize, int bb_uomFontSize )  {
@@ -752,7 +752,7 @@ static void bb_ui_draw_UI(UIState *s) {
 	 if (tri_state_switch ==3) {
 	 	ui_draw_vision_grid(s);
 	 }
- }
+ } */
 
 
 //BB END: functions added for the display of various items
@@ -1242,10 +1242,8 @@ void ui_nvg_init(UIState *s) {
   s->font_sans_bold = nvgCreateFont(s->vg, "sans-bold", "../assets/fonts/opensans_bold.ttf");
   assert(s->font_sans_bold >= 0);
 
-  assert(s->img_wheel >= 0);
   s->img_wheel = nvgCreateImage(s->vg, "../assets/img_alex_logo.png", 1);
-
-  assert(s->img_turn >= 0);
+  assert(s->img_wheel != 0);
   s->img_turn = nvgCreateImage(s->vg, "../assets/img_trafficSign_turn.png", 1);
   assert(s->img_turn != 0);
   s->img_face = nvgCreateImage(s->vg, "../assets/img_driver_face.png", 1);
