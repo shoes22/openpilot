@@ -327,7 +327,7 @@ void handle_message(UIState *s, SubMaster &sm) {
       }
     }
   }
-  if (sm.updated("gpsLocationExternal")) {
+  /*if (sm.updated("gpsLocationExternal")) {
     auto data = sm["gpsLocationExternal"].getGpsLocationExternal();
 
     scene.gpsAccuracy= data.getAccuracy();
@@ -339,7 +339,7 @@ void handle_message(UIState *s, SubMaster &sm) {
     {
         scene.gpsAccuracy=99.8;
     }
-  }
+  }*/
   if (sm.updated("radarState")) {
     auto data = sm["radarState"].getRadarState();
     scene.lead_data[0] = data.getLeadOne();

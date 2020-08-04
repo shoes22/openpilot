@@ -123,11 +123,11 @@ typedef struct UIScene {
 
   uint64_t started_ts;
   //BB CPU TEMP
-  uint16_t maxCpuTemp;
+  /*uint16_t maxCpuTemp;
   uint32_t maxBatTemp;
   float gpsAccuracy ;
   float angleSteers;
-  float angleSteersDes;
+  float angleSteersDes;*/
   //BB END CPU TEMP
 
   // Used to show gps planner status
