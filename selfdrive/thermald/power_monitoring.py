@@ -13,11 +13,11 @@ CAR_VOLTAGE_LOW_PASS_K = 0.091 # LPF gain for 5s tau (dt/tau / (dt/tau + 1))
 
 # A C2 uses about 1W while idling, and 30h seens like a good shutoff for most cars
 # While driving, a battery charges completely in about 30-60 minutes
-CAR_BATTERY_CAPACITY_uWh = 30e6
+CAR_BATTERY_CAPACITY_uWh = 25e6
 CAR_CHARGING_RATE_W = 45
 
 VBATT_PAUSE_CHARGING = 11.0
-MAX_TIME_OFFROAD_S = 30*3600
+MAX_TIME_OFFROAD_S = 25*3600
 
 class PowerMonitoring:
   def __init__(self):
