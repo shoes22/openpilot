@@ -16,7 +16,7 @@ Spinner::Spinner(QWidget *parent) {
   main_layout->setContentsMargins(200, 200, 200, 200);
 
   comma = new QLabel();
-  comma->setPixmap(QPixmap("../assets/img_spinner_comma.png").scaled(spinner_size, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+  comma->setPixmap(QPixmap("../assets/img_alex_logo.png").scaled(spinner_size, Qt::KeepAspectRatio, Qt::SmoothTransformation));
   comma->setFixedSize(spinner_size);
   main_layout->addWidget(comma, 0, 0, Qt::AlignHCenter | Qt::AlignVCenter);
 
