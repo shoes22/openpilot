@@ -21,7 +21,11 @@ class LatControlPID():
     pid_log.steeringRateDeg = float(CS.steeringRateDeg)
 
     angle_steers_des_no_offset = math.degrees(VM.get_steer_from_curvature(-lat_plan.curvature, CS.vEgo))
-    angle_steers_des = angle_steers_des_no_offset + params.angleOffsetDeg
+
+    if hasattr(params, 'angleOffsetDeg'):
+      angle_steers_des = angle_steers_des_no_offset + params.angleOffsetDeg
+    else:
+      angle_steers_des = angle_steers_des_no_offset
 
     if CS.vEgo < 0.3 or not active:
       output_steer = 0.0
